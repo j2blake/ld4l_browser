@@ -1,0 +1,33 @@
+#! /usr/bin/env ruby
+
+=begin rdoc
+--------------------------------------------------------------------------------
+
+Scan through the directory tree of input files and the concordance. Produce a
+file of triples and a distillation file. 
+
+The file of triples can be ingested into the triple-store. It adds OCLC work IDs
+to Works.
+
+The distillation file contains Work URIs, Instance URIs, WorldCat URIs and OCLC
+Work IDs. This can be processed with a distillation file from another site to 
+create additional triples.
+
+--------------------------------------------------------------------------------
+
+Usage: ld4l_distill_site <source_directory> <target_directory> <concordance_file> [OVERWRITE] <report_file> [REPLACE]
+
+--------------------------------------------------------------------------------
+=end
+
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'ld4l_browser_data'
+require 'ld4l_browser_data/additional_triples'
+
+#
+# ---------------------------------------------------------
+# MAIN ROUTINE
+# ---------------------------------------------------------
+#
+
+Ld4lBrowserData::AdditionalTriples::SiteDistiller.new.run
