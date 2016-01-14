@@ -1,8 +1,27 @@
 #! /bin/bash
-cat distillation.txt | \
+#
+# Check the command-line
+#
+if [ $# -lt 1 ]; then
+  echo "Specify a data directory."
+  exit 1
+fi
+
+if [ ! -d $1 ]; then
+  echo "Directory $1 doesn't exist."
+  exit 1
+fi
+
+if [ ! -d $1/adding_triples ]; then
+  echo "Directory $1/adding_triples doesn't exist."
+  exit 1
+fi
+
+#
+# Create a triple for each line.
+#
+cat $1/adding_triples/work_to_workID.txt | \
    awk '{
-         printf("<%s> <http://bib.ld4l.org/ontology/identifiedBy> <%soclc%s> .\n", $1, $1, $4)
-         printf("<%soclc%s> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://bib.ld4l.org/ontology/Identifier> .\n", $1, $4)
-         printf("<%soclc%s> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> \"(WORK)%s\"i .\n", $1, $4, $4)
+         printf("<%s> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <http://worldcat.org/entity/work/id/%s> .\n", $1, $4)
       }
-   ' > adding_workids.nt
+   ' > $1/adding_triples/adding_workids.nt
