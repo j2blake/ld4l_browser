@@ -15,7 +15,7 @@ create additional triples.
 
 --------------------------------------------------------------------------------
 
-Usage: ld4l_distill_site <source_directory> <target_directory> <concordance_file> [OVERWRITE] <report_file> [REPLACE]
+Usage: ld4l_distill_site source=<source_directory> target=<target_directory>, concordance=<concordance_file>, report=<report_file>, [REPLACE_REPORT], [OVERWRITE_TARGET]
 
 --------------------------------------------------------------------------------
 =end

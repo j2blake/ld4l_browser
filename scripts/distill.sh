@@ -73,6 +73,9 @@ join -1 2 -o 1.1,0,2.2 $target/work_to_instance.txt $target/instance_to_worldcat
 # combine with concordance to get work_to_workID, sorted by work.
 #
 echo `date` 'starting second join'
-join -1 3 -o 1.1,2.2 $target/work_to_instance_to_worldcat.txt /home/jeb228/data/concordance/concordance_sorted.txt | \
+ruby ~/projects/ld4l_browser_data/lib/ld4l_browser_data/additional_triples/distill_kluge.rb \
+  $target/work_to_instance_to_worldcat.txt /home/jeb228/data/concordance/ocnConcordance201508 | \
   sort > $target/work_to_workID.txt
+#join -1 3 -o 1.1,2.2 $target/work_to_instance_to_worldcat.txt /Users/jeb228/LD4L/data/concordance_sorted.txt | \
+#  sort > $target/work_to_workID.txt
 echo `date` 'complete'
