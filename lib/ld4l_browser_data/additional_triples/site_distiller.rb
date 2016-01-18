@@ -129,8 +129,11 @@ module Ld4lBrowserData
       end
 
       def strip_quotes(raw)
-        /^"?([^"]*)"?$/ =~ raw
-        $~[1]
+        if /^"?([^"]*)"?$/ =~ raw
+          $~[1]
+        else
+          raw
+        end
       end
 
       def get_localname(uri)
