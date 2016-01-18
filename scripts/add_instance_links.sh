@@ -7,8 +7,8 @@ if [ $# -lt 2 ]; then
   exit 1
 fi
 
-source1="$1/adding_triples/instance_to_worldcat.txt"
-source2="$2/adding_triples/instance_to_worldcat.txt"
+source1="$1/adding_triples/instance_to_worldcat_all.txt"
+source2="$2/adding_triples/instance_to_worldcat_all.txt"
 
 if [ ! -f $source1 ]; then
   echo "$source1 doesn't exist."
@@ -20,8 +20,8 @@ if [ ! -f $source2 ]; then
   exit 1
 fi
 
-sorted1="$1/adding_triples/instance_by_worldcat.txt"
-sorted2="$2/adding_triples/instance_by_worldcat.txt"
+sorted1="$1/adding_triples/instance_by_worldcat_all.txt"
+sorted2="$2/adding_triples/instance_by_worldcat_all.txt"
 target1="$1/adding_triples/adding_instance_links_`basename \`cd $2 ; pwd \``.nt"
 target2="$2/adding_triples/adding_instance_links_`basename \`cd $1 ; pwd \``.nt"
 
