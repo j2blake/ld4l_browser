@@ -89,7 +89,7 @@ module Ld4lBrowserData
         pattern = /22-rdf-syntax-ns#value/
         count = 0
         File.open(@identifier_to_value, 'w') do |out|
-          File.foreach((@bf_instance) do |line|
+          File.foreach(@bf_instance) do |line|
             if pattern =~ line
               fields = line.split
               out.puts(fields[0] + " " + strip_quotes(fields[2]))
