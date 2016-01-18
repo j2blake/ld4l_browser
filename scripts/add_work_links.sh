@@ -37,7 +37,7 @@ sort -k2,2 $source2 > $sorted2
 echo "Creating $target1"
 join -1 2 -2 2 -o 1.1,2.1 $sorted1 $sorted2 | \
   awk '{
-         printf("<%s> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <%s> .\n", $1, $2)
+         printf("<%s> <http://www.w3.org/2002/07/owl#sameAs> <%s> .\n", $1, $2)
        }
   ' > $target1
 
@@ -47,6 +47,6 @@ join -1 2 -2 2 -o 1.1,2.1 $sorted1 $sorted2 | \
 echo "Creating $target2"
 join -1 2 -2 2 -o 1.1,2.1 $sorted2 $sorted1 | \
   awk '{
-         printf("<%s> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <%s> .\n", $1, $2)
+         printf("<%s> <http://www.w3.org/2002/07/owl#sameAs> <%s> .\n", $1, $2)
        }
   ' > $target2
