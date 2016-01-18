@@ -129,7 +129,7 @@ module Ld4lBrowserData
       end
 
       def strip_quotes(raw)
-        /^"?(.*)"?$/ =~ raw
+        /^"?([^"]*)"?$/ =~ raw
         $~[1]
       end
 
