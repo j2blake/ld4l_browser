@@ -92,7 +92,7 @@ module Ld4lBrowserData
           File.foreach(@bf_instance) do |line|
             if pattern =~ line
               fields = line.split
-              out.puts(fields[0] + " " + strip_quotes(fields[2]))
+              out.puts(strip_angles(fields[0]) + " " + strip_quotes(fields[2]))
               count += 1
             end
           end
@@ -144,7 +144,7 @@ module Ld4lBrowserData
         File.open(out_path, 'w') do |out|
           File.foreach(in_path) do |line|
             if pattern =~ line
-              out.puts(line)
+              out.puts(line.split.map {|v| strip_quotes(strip_angles(v))}.join(' '))
               count += 1
             end
           end
