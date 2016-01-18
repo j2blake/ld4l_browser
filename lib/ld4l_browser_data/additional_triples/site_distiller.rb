@@ -54,9 +54,7 @@ module Ld4lBrowserData
 
       def create_work_to_instance()
         @report.start_method("create_work_to_instance")
-        #        pattern = /http:\/\/bib\.ld4l\.org\/ontology\/isInstanceOf/
-        bogus "isInstanceOf"
-        pattern = /http:\/\/ld4l\.org\/ontology\/bib\/isInstanceOf/
+        pattern = /http:\/\/bib\.ld4l\.org\/ontology\/isInstanceOf/
         count = 0
         File.open(@work_to_instance, 'w') do |out|
           File.foreach(@bf_instance) do |line|
@@ -88,11 +86,11 @@ module Ld4lBrowserData
 
       def create_additional_worldcat_ids
         filter(@bf_instance, /identifiedBy/, @instance_to_identifiers)
-        filter(@bf_instance, /oclcIdentifier/, @oclc_identifiers)
+        filter(@bf_instance, /OclcIdentifier/, @oclc_identifiers)
         filter(@bf_instance, /22-rdf-syntax-ns#value/, @identifier_to_value)
 
-        join(@instance_to_identifiers, 2, @oclc_identifiers, 1, @instance_to_oclc, [[1, 1], [1,2]])
-        join(@instance_to_oclc, 2, @identifier_to_value, 1, @the_hard_way, [[1, 1], [2, 2]])
+        join(@instance_to_identifiers, 3, @oclc_identifiers, 1, @instance_to_oclc, [[1, 1], [1,3]])
+        join(@instance_to_oclc, 2, @identifier_to_value, 1, @the_hard_way, [[1, 1], [2, 3]])
 
         concat(@instance_to_worldcat, @the_hard_way, @all_instance_to_worldcat)
       end
