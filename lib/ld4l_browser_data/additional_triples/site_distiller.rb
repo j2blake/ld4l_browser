@@ -91,8 +91,8 @@ module Ld4lBrowserData
         filter(@bf_instance, /oclcIdentifier/, @oclc_identifiers)
         filter(@bf_instance, /22-rdf-syntax-ns#value/, @identifier_to_value)
 
-        join(@instance_to_identifiers, 2, @oclc_identifiers, 1, @instance_to_oclc, [[1, 1], [1,2]])
-        join(@instance_to_oclc, 2, @identifier_to_value, 1, @the_hard_way, [[1, 1], [2, 2]])
+        join(@instance_to_identifiers, 2, @oclc_identifiers, 1, @instance_to_oclc, [[1, 1], [1,3]])
+        join(@instance_to_oclc, 2, @identifier_to_value, 1, @the_hard_way, [[1, 1], [2, 3]])
 
         concat(@instance_to_worldcat, @the_hard_way, @all_instance_to_worldcat)
       end
@@ -161,12 +161,17 @@ module Ld4lBrowserData
       end
 
       def concat(in_path_1, in_path_2, out_path)
+        @report.start_concat(in_path_1, in_path_2, out_path)
+        count = 0
         File.open(out_path, 'w') do |out|
           File.foreach(in_path_1) do |line| out.puts(line)
-            File.foreach(in_path_2) do |line| out.puts(line)
-            end
+            count += 1
+          end
+          File.foreach(in_path_2) do |line| out.puts(line)
+            count += 1
           end
         end
+        @report.end_concat(in_path_1, in_path_2, out_path, count)
       end
 
       def run
