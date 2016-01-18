@@ -84,13 +84,28 @@ module Ld4lBrowserData
         @report.end_method_with_count("create_instance_to_worldcat", count)
       end
 
+      def create_identifier_to_value()
+        @report.start_method("create_identifier_to_value")
+        pattern = /22-rdf-syntax-ns#value/
+        count = 0
+        File.open(@identifier_to_value, 'w') do |out|
+          File.foreach((@bf_instance) do |line|
+            if pattern =~ line
+              fields = line.split
+              out.puts(fields[0] + " " + strip_quotes(fields[2]))
+              count += 1
+            end
+          end
+        end
+        @report.end_method_with_count("create_identifier_to_value", count)
+      end
+
       def create_additional_worldcat_ids
         filter(@bf_instance, /identifiedBy/, @instance_to_identifiers)
         filter(@bf_instance, /OclcIdentifier/, @oclc_identifiers)
-        filter(@bf_instance, /22-rdf-syntax-ns#value/, @identifier_to_value)
 
         join(@instance_to_identifiers, 3, @oclc_identifiers, 1, @instance_to_oclc, [[1, 1], [1,3]])
-        join(@instance_to_oclc, 2, @identifier_to_value, 1, @the_hard_way, [[1, 1], [2, 3]])
+        join(@instance_to_oclc, 2, @identifier_to_value, 1, @the_hard_way, [[1, 1], [2, 2]])
 
         concat(@instance_to_worldcat, @the_hard_way, @all_instance_to_worldcat)
       end
@@ -110,6 +125,11 @@ module Ld4lBrowserData
 
       def strip_angles(raw)
         /^<?([^<>]*)>?$/ =~ raw
+        $~[1]
+      end
+
+      def strip_quotes(raw)
+        /^"?(.*)"?$/ =~ raw
         $~[1]
       end
 
@@ -177,6 +197,7 @@ module Ld4lBrowserData
           process_arguments
           create_work_to_instance
           create_instance_to_worldcat
+          create_identifier_to_value
           create_additional_worldcat_ids
           create_work_to_work_ids
         rescue UserInputError, IllegalStateError
