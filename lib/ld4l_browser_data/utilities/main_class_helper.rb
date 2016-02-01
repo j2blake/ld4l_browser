@@ -81,6 +81,16 @@ module Ld4lBrowserData
         path
       end
 
+      def validate_integer(props)
+        key, label, min = props.values_at(:key, :label, :min)
+        value = @args[key]
+        user_input_error("A value for #{label} is required.") unless value
+        user_input_error("'#{value}' is not a valid integer.") unless value =~ /^-?\d+$/
+        integer = value.to_i
+        user_input_error("'#{label}' must be at least #{min}") unless integer >= min if min
+        integer
+      end
+
       def clear_directory(path)
         Dir.chdir(path) do |d|
           Dir.entries('.') do |fn|
@@ -98,7 +108,7 @@ module Ld4lBrowserData
 
       def ok_to_replace?(path)
         puts "  REPLACE #{path} (yes/no)?"
-        raise IllegalStateError.new("Fine. forget it") unless 'yes' == STDIN.gets.chomp
+        raise UserInputError.new("Fine. forget it") unless 'yes' == STDIN.gets.chomp
         true
       end
 

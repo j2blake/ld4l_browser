@@ -1,0 +1,26 @@
+#! /usr/bin/env ruby
+
+=begin rdoc
+--------------------------------------------------------------------------------
+
+Run rapper against all eligible files in a directory tree, comverting RDF/XML to
+NTriples.
+
+If you supply a regular expression, any file whose path matches the expression
+is eligible for conversion. By default, files whose names end in ".owl" or ".rdf"
+are eligible. 
+
+--------------------------------------------------------------------------------
+=end
+
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'ld4l_browser_data'
+require 'ld4l_browser_data/ld4l_ingesting'
+
+#
+# ---------------------------------------------------------
+# MAIN ROUTINE
+# ---------------------------------------------------------
+#
+
+Ld4lBrowserData::Ld4lIngesting::ConvertDirectoryTree.new.run

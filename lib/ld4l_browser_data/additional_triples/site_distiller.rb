@@ -8,10 +8,6 @@ Create a distillation of this site that can be used to create additional triples
    generate WorkID triples.
 
 --------------------------------------------------------------------------------
-
-Usage: ld4l_distill_site source=<source_directory> target=<target_directory>, concordance=<concordance_file>, report=<report_file>, [REPLACE_REPORT], [OVERWRITE_TARGET]
-
---------------------------------------------------------------------------------
 =end
 
 module Ld4lBrowserData

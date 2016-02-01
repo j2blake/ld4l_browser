@@ -14,10 +14,6 @@ Work IDs. This can be processed with a distillation file from another site to
 create additional triples.
 
 --------------------------------------------------------------------------------
-
-Usage: ld4l_distill_site source=<source_directory> target=<target_directory>, concordance=<concordance_file>, report=<report_file>, [REPLACE_REPORT], [OVERWRITE_TARGET]
-
---------------------------------------------------------------------------------
 =end
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
