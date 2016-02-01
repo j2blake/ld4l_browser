@@ -1,0 +1,21 @@
+#! /usr/bin/env ruby
+
+=begin rdoc
+--------------------------------------------------------------------------------
+
+If the currently-selected triple store is not running, start it running.
+
+--------------------------------------------------------------------------------
+=end
+
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'ld4l_browser_data'
+require 'ld4l_browser_data/triple_store_controller'
+
+#
+# ---------------------------------------------------------
+# MAIN ROUTINE
+# ---------------------------------------------------------
+#
+
+Ld4lBrowserData::TripleStoreController::Up.new.run
