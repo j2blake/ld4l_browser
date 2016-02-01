@@ -17,7 +17,7 @@ Usage: ld4l_distill_site source=<source_directory> target=<target_directory>, co
 module Ld4lBrowserData
   module AdditionalTriples
     class SiteDistiller
-      include MainClassHelper
+      include Utilities::MainClassHelper
       def initialize
         @usage_text = [
           'Usage is ld4l_distill_site \\',

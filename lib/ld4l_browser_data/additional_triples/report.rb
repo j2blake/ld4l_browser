@@ -1,7 +1,7 @@
 module Ld4lBrowserData
   module AdditionalTriples
     class Report
-      include ReportHelper
+      include Utilities::ReportHelper
       def start_method(name)
         logit("Starting #{name}")
       end
