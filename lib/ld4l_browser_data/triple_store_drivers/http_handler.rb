@@ -1,6 +1,7 @@
 module Ld4lBrowserData
   module TripleStoreDrivers
     module HttpHandler
+      attr_reader :http_counts
       def http_get(url, block, params, headers={})
         uri = URI.parse(url)
 
@@ -33,8 +34,10 @@ module Ld4lBrowserData
               end
 
               if response.code == "200"
+                response_status_summary(reason: :good, method: :get, request: uri.request_uri)
                 block.call(response) if block
               else
+                response_status_summary(reason: :bad_code, method: :get, request: uri.request_uri, code: response.code)
                 if block_given?
                   yield response
                 else
@@ -43,7 +46,11 @@ module Ld4lBrowserData
               end
             end
           rescue IOError => e
+            response_status_summary(reason: :io_error, method: :get, exception: e, request: uri.request_uri)
             raise e.exception(e.message << "\nProblem request: \n#{inspect_request(request, url)}")
+          rescue
+            response_status_summary(reason: :error, method: :get, exception: $!, request: uri.request_uri)
+            raise $!
           end
         end
       end
@@ -72,8 +79,10 @@ module Ld4lBrowserData
               end
 
               if response.code == "200"
+                response_status_summary(reason: :good, method: :put, request: uri.request_uri)
                 block.call(response) if block
               else
+                response_status_summary(reason: :bad_code, method: :put, request: uri.request_uri, code: response.code)
                 if block_given?
                   yield response
                 else
@@ -82,8 +91,26 @@ module Ld4lBrowserData
               end
             end
           rescue IOError => e
+            response_status_summary(reason: :io_error, method: :put, exception: e, request: uri.request_uri)
             raise e.exception(e.message << "\nProblem request: \n#{inspect_request(request, url)}")
+          rescue
+            response_status_summary(reason: :error, method: :put, exception: $!, request: uri.request_uri)
+            raise $!
           end
+        end
+      end
+
+      def response_status_summary(props)
+        @http_counts = Hash.new {|h, k| h[k] = Hash.new {|h, k| h[k] = 0}} unless @http_counts
+        begin
+          method = [:get, :put].find() {|m| m == props[:method]} || :other
+          reason = [:good, :bad_code, :io_error, :error].find() {|r| r == props[:reason]} || :other
+          @http_counts[method][reason] += 1
+          puts "response_status_summary: %s, this call %s" % [@http_counts.inspect, props.inspect] unless props[:reason] == :good
+        rescue
+          puts "bogus call to response_status_summary: %s, this call %s" % [@http_counts.inspect, props.inspect]
+          puts $!
+          puts $!.backtrace.join('\n')
         end
       end
 
