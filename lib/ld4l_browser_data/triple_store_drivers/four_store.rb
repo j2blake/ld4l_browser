@@ -186,7 +186,7 @@ module Ld4lBrowserData
         (1..10).each do
           begin
             return false if `pgrep 4s-httpd`.empty?
-            sparql_query('SELECT ?s WHERE {?s ?p ?o} LIMIT 1') {}
+            sparql_query('SELECT ?s WHERE {?s <http://totally_bogus> ?o} LIMIT 1') {}
             return true
           rescue Exception => e
             bogus e
