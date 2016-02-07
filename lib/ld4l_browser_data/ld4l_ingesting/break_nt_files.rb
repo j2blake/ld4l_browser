@@ -26,10 +26,6 @@ Two-pass approach:
     read through the file, breaking as determined.
 
 --------------------------------------------------------------------------------
-
-Usage: ld4l_break_nt_files <input_directory> <output_directory> [OVERWRITE] <report_file> [REPLACE] <max_triples>
-
---------------------------------------------------------------------------------
 =end
 require_relative 'break_nt_files/breakpoint_finder'
 require_relative 'break_nt_files/file_breaker'
@@ -50,6 +46,9 @@ module Ld4lBrowserData
           'report=<report_file>[~REPLACE] \\',
           'max_triples=<max_triples \\'
         ]
+
+        @files_count = 0
+        @broken_count = 0
       end
 
       def process_arguments()
@@ -59,9 +58,6 @@ module Ld4lBrowserData
         @report = Report.new('ld4l_break_nt_files', validate_output_file(:report, "report file"))
         @max_triples = validate_integer(:key => :max_triples, :label => "max_triples", :min => 100)
         @report.log_header(ARGV)
-
-        @files_count = 0
-        @broken_count = 0
       end
 
       def prepare_target_directory()

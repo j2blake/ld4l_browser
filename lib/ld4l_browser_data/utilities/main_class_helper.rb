@@ -91,6 +91,37 @@ module Ld4lBrowserData
         integer
       end
 
+      def validate_site_name(props)
+        key, label = props.values_at(:key, :label)
+        value = @args[key]
+        user_input_error("A value for #{label} is required.") unless value
+        user_input_error("'#{label}' must be one of #{site_names.inspect}") unless site_names.include?(value)
+        value
+      end
+
+      def site_names
+        ['cornell', 'harvard', 'stanford']
+      end
+
+      def check_site_consistency(ignore_surprise, props)
+        return if ignore_surprise
+
+        props = props.select{|_, v| v }
+        mentioned = props.values.map do |value|
+          site_names.select {|s| value.to_s.include?(s)}
+        end.flatten.uniq
+        return if mentioned.size < 2
+
+        raise UserInputError.new("Fine. forget it") unless ignore_surprises?(mentioned, props)
+      end
+
+      def ignore_surprises?(mentioned, props)
+        surprises = props.map { |label, value| "#{label} is '#{value}'" }
+        puts "  " + surprises.join("\n  ")
+        puts "      Ignore this discrepancy: #{mentioned.sort.inspect} (yes/no)?"
+        'yes' == STDIN.gets.chomp.downcase
+      end
+
       def clear_directory(path)
         Dir.chdir(path) do |d|
           Dir.entries('.') do |fn|
@@ -101,9 +132,13 @@ module Ld4lBrowserData
 
       def parse_output_path(raw_path)
         parts = raw_path.split('~')
-        replace = parts[1] && parts[1] == 'REPLACE'
         path = File.expand_path(parts[0])
-        [replace, path]
+        [parts[1] == 'REPLACE', path]
+      end
+
+      def parse_site_name(raw_name)
+        parts = raw_name.split('~')
+        [parts[1] == 'IGNORE_SURPRISE', parts[0].downcase]
       end
 
       def ok_to_replace?(path)

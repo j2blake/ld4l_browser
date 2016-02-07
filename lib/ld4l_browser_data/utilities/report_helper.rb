@@ -34,6 +34,10 @@ module Ld4lBrowserData
       def logit(message)
         puts "#{Time.new.strftime('%Y-%m-%d %H:%M:%S')} #{message}"
       end
+      
+      def log_only(message)
+        @file.puts "#{Time.new.strftime('%Y-%m-%d %H:%M:%S')} #{message}"
+      end
 
       def log_header(args)
         logit "#{@main_routine} #{args.join(' ')}"
@@ -58,6 +62,10 @@ module Ld4lBrowserData
 
       def close
         @file.close if @file
+      end
+      
+      def to_s
+        "Report: '#{@file.path}'"
       end
     end
   end
