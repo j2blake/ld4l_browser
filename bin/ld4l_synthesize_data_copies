@@ -1,0 +1,34 @@
+#! /usr/bin/env ruby
+
+=begin rdoc
+--------------------------------------------------------------------------------
+
+Multiply existing N-Triples files to produce a full-sized synthetic data set.
+
+Create copies of the original files, but each copy uses distinct URIs for the
+local data. These URIs are created by prefixing the original localname with a
+code that is also added to the filename.
+
+For example, if a file named bfInstance.nt contains this line:
+    bfInstance.nt
+        <http://draft.ld4l.org/cornell/n12345> a <http://bib.ld4l.org/ontology/Work>
+then the two generated copies would be
+    bfInstance--a.nt
+        <http://draft.ld4l.org/cornell/a--n12345> a <http://bib.ld4l.org/ontology/Work>
+    bfInstance--b.nt
+        <http://draft.ld4l.org/cornell/b--n12345> a <http://bib.ld4l.org/ontology/Work>
+
+--------------------------------------------------------------------------------
+=end
+
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'ld4l_browser_data'
+require 'ld4l_browser_data/scalability'
+
+#
+# ---------------------------------------------------------
+# MAIN ROUTINE
+# ---------------------------------------------------------
+#
+
+Ld4lBrowserData::Scalability::SynthesizeDataCopies.new.run

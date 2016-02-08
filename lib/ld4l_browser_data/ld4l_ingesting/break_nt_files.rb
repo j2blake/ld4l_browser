@@ -44,7 +44,7 @@ module Ld4lBrowserData
           'source=<source_directory> \\',
           'target=<target_directory>[~REPLACE] \\',
           'report=<report_file>[~REPLACE] \\',
-          'max_triples=<max_triples \\'
+          'max_triples=<max_triples> \\'
         ]
 
         @files_count = 0

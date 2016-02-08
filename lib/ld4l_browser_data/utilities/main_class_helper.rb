@@ -82,12 +82,13 @@ module Ld4lBrowserData
       end
 
       def validate_integer(props)
-        key, label, min = props.values_at(:key, :label, :min)
+        key, label, min, max = props.values_at(:key, :label, :min, :max)
         value = @args[key]
         user_input_error("A value for #{label} is required.") unless value
         user_input_error("'#{value}' is not a valid integer.") unless value =~ /^-?\d+$/
         integer = value.to_i
         user_input_error("'#{label}' must be at least #{min}") unless integer >= min if min
+        user_input_error("'#{label}' must be no more than #{max}") unless integer <= max if max
         integer
       end
 
