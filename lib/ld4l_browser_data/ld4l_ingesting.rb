@@ -20,6 +20,8 @@ require_relative "ld4l_ingesting/filter_ntriples"
 require_relative "ld4l_ingesting/scan_directory_tree"
 require_relative "ld4l_ingesting/summarize_ingest_timings"
 
-module Ld4lIngesting
-
+module Ld4lBrowserData
+  module Ld4lIngesting
+    
+  end
 end

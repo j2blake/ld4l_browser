@@ -1,0 +1,26 @@
+#! /usr/bin/env ruby
+
+=begin rdoc
+--------------------------------------------------------------------------------
+
+Build the Solr index from the triple-store, optionally clearing it first.
+
+Keeps a bookmark in case of interruption, so we can resume without restarting.
+You may choose to ignore the bookmark, to start again.
+
+--------------------------------------------------------------------------------
+=end
+
+#require 'rubygems'
+
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'ld4l_browser_data'
+require 'ld4l_browser_data/indexing'
+
+#
+# ---------------------------------------------------------
+# MAIN ROUTINE
+# ---------------------------------------------------------
+#
+
+Ld4lBrowserData::Indexing::BuildSolrIndex.new.run

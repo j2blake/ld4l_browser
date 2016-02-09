@@ -55,6 +55,7 @@ module Ld4lBrowserData
           'Report path' => @report
         })
       end
+
       def make_copies
         @prefix = 'a'
         @num_copies.times do

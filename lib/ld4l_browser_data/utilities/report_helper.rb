@@ -39,8 +39,12 @@ module Ld4lBrowserData
         @file.puts "#{Time.new.strftime('%Y-%m-%d %H:%M:%S')} #{message}"
       end
 
-      def log_header(args)
-        logit "#{@main_routine} #{args.join(' ')}"
+      def log_header()
+        logit "#{@main_routine} #{ARGV.join(' ')}"
+      end
+
+      def nothing_to_do
+        logit("The bookmark says that processing is complete.")
       end
 
       def summarize_http_status(ts)
