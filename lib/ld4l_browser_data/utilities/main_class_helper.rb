@@ -3,7 +3,7 @@ require 'fileutils'
 module Ld4lBrowserData
   module Utilities
     module MainClassHelper
-      def parse_arguments(cmd_args)
+      def parse_arguments(*allowed)
         @args = {}
         ARGV.each do |arg|
           parts = arg.split('=', 2)
@@ -12,6 +12,14 @@ module Ld4lBrowserData
           else
             @args[arg.to_sym] = true
           end
+        end
+        guard_against_surprise_arguments(allowed)
+      end
+
+      def guard_against_surprise_arguments(allowed)
+        not_allowed = @args.keys - allowed
+        unless not_allowed.empty?
+          user_input_error("Unexpected parameters on the command line: #{not_allowed.join(', ')}")
         end
       end
 
@@ -134,7 +142,13 @@ module Ld4lBrowserData
       def parse_output_path(raw_path)
         parts = raw_path.split('~')
         path = File.expand_path(parts[0])
-        [parts[1] == 'REPLACE', path]
+        if parts[1] == 'REPLACE'
+          [true, path]
+        elsif parts[1]
+          user_input_error("Incorrect modifier on output path: #{parts[1]}")
+        else
+          [false, path]
+        end
       end
 
       def parse_site_name(raw_name)

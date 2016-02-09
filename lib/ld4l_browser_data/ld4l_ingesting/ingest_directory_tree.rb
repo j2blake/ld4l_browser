@@ -40,11 +40,11 @@ module Ld4lBrowserData
       end
 
       def process_arguments()
-        parse_arguments(ARGV)
+        parse_arguments(:source, :site, :report, :IGNORE_SURPRISES)
         @source_dir = validate_input_directory(:source, "source_directory")
         @graph_uri = GRAPH_URI_TEMPLATE % validate_site_name(key: :site, label: "site name")
         @report = Report.new('ld4l_ingest_directory_tree', validate_output_file(:report, "report file"))
-        @report.log_header(ARGV)
+        @report.log_header
       end
 
       def check_for_surprises
