@@ -83,7 +83,7 @@ module Ld4lBrowserData
       end
 
       def prepare_document_factory
-        @doc_factory = DocumentFactory.new(@ts)
+        @doc_factory = IndexDocuments::DocumentFactory.new(@ts)
       end
 
       def initialize_bookmark
