@@ -32,7 +32,7 @@ module Ld4lBrowserData
         logit "Progress: %s, offset %d, found %d" % [type, offset, found]
       end
 
-      def summarize(doc_factory, bookmark, status=:complete)
+      def summarize(doc_factory, status=:complete)
         if status != :complete
           logit ">>>>>>>INTERRUPTED<<<<<<<\n\n"
         else

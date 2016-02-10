@@ -89,7 +89,11 @@ A collection of command-line utilities that are used to process data for search.
     Build the Solr index by querying for all Works, Instances and Agents.
     Interruptible.
 
-* `ld4l_sample_solr_index` NO
+* `ld4l_sample_solr_index`
+
+    Add some samples to the Solr index. Index a specified number of Works, and
+    the Instances and Agents that relate to them.
+    
 * `ld4l_index_chosen_uris` NO
 
 ### Generating LOD files

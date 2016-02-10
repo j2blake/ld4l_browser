@@ -122,7 +122,7 @@ module Ld4lBrowserData
       def process_interruption
         @ss.commit
         @bookmark.persist
-        @report.summarize(@doc_factory, @bookmark, :interrupted)
+        @report.summarize(@doc_factory, :interrupted)
       end
 
       def run()
@@ -138,7 +138,7 @@ module Ld4lBrowserData
           @report.record_counts(Counts.new(@ts, @graph))
           query_and_index_items
 
-          @report.summarize(@doc_factory, @bookmark)
+          @report.summarize(@doc_factory)
           @ss.commit
         rescue UserInputError, IllegalStateError
           puts
