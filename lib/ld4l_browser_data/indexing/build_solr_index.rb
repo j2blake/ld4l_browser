@@ -8,6 +8,8 @@ You may choose to ignore the bookmark, to start again.
 
 --------------------------------------------------------------------------------
 =end
+require_relative 'build_solr_index/bookmark'
+require_relative 'build_solr_index/uri_discoverer'
 
 module Ld4lBrowserData
   module Indexing
@@ -87,7 +89,7 @@ module Ld4lBrowserData
       end
 
       def initialize_bookmark
-        @bookmark = Bookmark.new('build_solr_index', @ss, @ignore_bookmarks)
+        @bookmark = Bookmark.new(@ss, @ignore_bookmarks)
       end
 
       def trap_control_c
