@@ -100,7 +100,7 @@ module Ld4lBrowserData
 
           @report.summarize(@doc_factory, @bookmark)
           @ss.commit
-          @bookmark.clear
+          @bookmark.complete
         rescue UserInputError
           puts
           puts "ERROR: #{$!}"
