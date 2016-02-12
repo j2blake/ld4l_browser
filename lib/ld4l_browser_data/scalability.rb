@@ -6,7 +6,7 @@ require "ld4l_browser_data/utilities/report_helper"
 require_relative "scalability/synthesize_data_copies"
 require_relative "scalability/report"
 
-module Ld4lIngesting
+module Ingesting
   module Scalability
   end
 end

@@ -32,7 +32,7 @@ require_relative 'break_nt_files/file_breaker'
 require_relative 'report'
 
 module Ld4lBrowserData
-  module Ld4lIngesting
+  module Ingesting
     class BreakNtFiles
       include Utilities::MainClassHelper
 

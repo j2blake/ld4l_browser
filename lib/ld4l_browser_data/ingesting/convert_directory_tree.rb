@@ -12,7 +12,7 @@ are eligible.
 =end
 
 module Ld4lBrowserData
-  module Ld4lIngesting
+  module Ingesting
     class ConvertDirectoryTree
       DEFAULT_MATCHER = /.+\.(rdf|owl)$/
 

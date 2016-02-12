@@ -15,7 +15,7 @@ Output looks like this:
 =end
 
 module Ld4lBrowserData
-  module Ld4lIngesting
+  module Ingesting
     class SummarizeIngestTimings
       include Utilities::MainClassHelper
       def initialize

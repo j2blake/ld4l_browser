@@ -8,7 +8,7 @@ into the output directory, filtering out all triples with known syntax errors.
 =end
 
 module Ld4lBrowserData
-  module Ld4lIngesting
+  module Ingesting
     class FilterNtriples
       include Utilities::MainClassHelper
 

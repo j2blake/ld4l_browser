@@ -11,7 +11,7 @@ into the output directory, filtering out all triples with known syntax errors.
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'ld4l_browser_data'
-require 'ld4l_browser_data/ld4l_ingesting'
+require 'ld4l_browser_data/ingesting'
 
 #
 # ---------------------------------------------------------
@@ -19,4 +19,4 @@ require 'ld4l_browser_data/ld4l_ingesting'
 # ---------------------------------------------------------
 #
 
-Ld4lBrowserData::Ld4lIngesting::FilterNtriples.new.run
+Ld4lBrowserData::Ingesting::FilterNtriples.new.run

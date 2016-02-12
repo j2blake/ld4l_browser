@@ -18,7 +18,7 @@ Output as a CSV file, like this:
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'ld4l_browser_data'
-require 'ld4l_browser_data/ld4l_ingesting'
+require 'ld4l_browser_data/ingesting'
 
 #
 # ---------------------------------------------------------
@@ -26,4 +26,4 @@ require 'ld4l_browser_data/ld4l_ingesting'
 # ---------------------------------------------------------
 #
 
-Ld4lBrowserData::Ld4lIngesting::SummarizeIngestTimings.new.run
+Ld4lBrowserData::Ingesting::SummarizeIngestTimings.new.run

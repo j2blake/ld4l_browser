@@ -24,7 +24,7 @@ Find breakpoints: loop until at end of file
 =end
 
 module Ld4lBrowserData
-  module Ld4lIngesting
+  module Ingesting
     class BreakNtFiles
       class BlankNodesMap < Hash
         def record(node_name, line_number)

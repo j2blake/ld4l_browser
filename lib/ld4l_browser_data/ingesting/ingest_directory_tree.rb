@@ -18,7 +18,7 @@ Usage: ld4l_ingest_directory_tree <directory> <graph_uri> <report_file> [regexp]
 =end
 
 module Ld4lBrowserData
-  module Ld4lIngesting
+  module Ingesting
     class IngestDirectoryTree
       include Utilities::MainClassHelper
       include Utilities::TripleStoreUser
