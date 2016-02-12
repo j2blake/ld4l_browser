@@ -14,6 +14,8 @@ module Ld4lBrowserData
           @values = defaults
         end
         persist
+
+        @start = Hash[@values]
       end
 
       def load
@@ -24,7 +26,7 @@ module Ld4lBrowserData
           nil
         end
       end
-      
+
       def persist
         store JSON.generate(@values)
       end
@@ -50,6 +52,10 @@ module Ld4lBrowserData
         @values[:complete]
       end
 
+      def start
+        @start
+      end
+      
       #
       # Override these stub methods
       #
