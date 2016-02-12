@@ -28,7 +28,7 @@ module Ld4lBrowserData
         @file = File.open(path, 'w')
         @file.sync = true
         $stdout = MultiIO.new($stdout, @file)
-        $stderr = MultiIO.new($stderr, @file)
+#        $stderr = MultiIO.new($stderr, @file)
       end
 
       def logit(message)
