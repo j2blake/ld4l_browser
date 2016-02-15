@@ -1,7 +1,9 @@
 =begin
 Driver for the commercial version of Virtuoso.
 
-So far, the only differences we know about are in virtuoso.ini
+So far, the only differences we know about are:
+  - different name for the virtuoso process
+  - minor differences in virtuoso.ini
 =end
 module Ld4lBrowserData
   module TripleStoreDrivers
@@ -9,6 +11,10 @@ module Ld4lBrowserData
       def template_file
         'virtuoso_pro.ini.template'
       end
+      def process_name
+        'virtuoso-t'
+      end
+
     end
   end
 end

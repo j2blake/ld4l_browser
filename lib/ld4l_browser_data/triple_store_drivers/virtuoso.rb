@@ -42,6 +42,10 @@ module Ld4lBrowserData
       def template_file
         'virtuoso.ini.template'
       end
+      
+      def process_name
+        'virtuoso-t'
+      end
 
       #
       # It's easy to detect that the process is present, but has it completed
@@ -55,7 +59,7 @@ module Ld4lBrowserData
       def running?
         0.step(@settings[:seconds_to_startup], 3) do
           begin
-            return false unless `pgrep virtuoso-t`.size > 0
+            return false unless `pgrep #{process_name}`.size > 0
             Net::Telnet::new("Port" => @isql_port, "Timeout" => 2).close
             Net::Telnet::new("Port" => @http_port, "Timeout" => 2).close
             return true
@@ -71,7 +75,7 @@ module Ld4lBrowserData
         prepare_ini_file
 
         Dir.chdir(@data_dir) do
-          `virtuoso-t -c #{@data_dir}/virtuoso.ini`
+          `#{process_name} -c #{@data_dir}/virtuoso.ini`
           raise "Failed to open Virtuoso: exit status = #{$?.exitstatus}" unless $?.exitstatus == 0
           raise "Failed to open Virtuoso -- not running" unless running?
         end
