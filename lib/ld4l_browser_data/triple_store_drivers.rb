@@ -16,6 +16,7 @@ require_relative "triple_store_drivers/fuseki2"
 require_relative "triple_store_drivers/instrumented_wrapper"
 require_relative "triple_store_drivers/sesame"
 require_relative "triple_store_drivers/virtuoso"
+require_relative "triple_store_drivers/virtuoso_pro"
 
 module Ld4lBrowserData
   module TripleStoreDrivers

@@ -39,6 +39,10 @@ module Ld4lBrowserData
         self.class.set_instance(self, @settings)
       end
 
+      def template_file
+        'virtuoso.ini.template'
+      end
+
       #
       # It's easy to detect that the process is present, but has it completed
       # initialization? Is it in the process of shutting down? Try repeatedly to
@@ -97,7 +101,7 @@ module Ld4lBrowserData
       end
 
       def prepare_ini_file()
-        File.open(File.expand_path('virtuoso.ini.template', File.dirname(__FILE__))) do |i|
+        File.open(File.expand_path(template_file, File.dirname(__FILE__))) do |i|
           File.open("#{@data_dir}/virtuoso.ini", 'w') do |o|
             namespace = OpenStruct.new(@settings)
             o.write(ERB.new(i.read).result(namespace.instance_eval { binding }))
