@@ -3,19 +3,19 @@
 =begin rdoc
 --------------------------------------------------------------------------------
 
-Run rapper against all eligible files in a directory tree, comverting RDF/XML to
-NTriples.
+Build the Solr index from the triple-store, optionally clearing it first.
 
-If you supply a regular expression, any file whose path matches the expression
-is eligible for conversion. By default, files whose names end in ".owl" or ".rdf"
-are eligible. 
+Keeps a bookmark in case of interruption, so we can resume without restarting.
+You may choose to ignore the bookmark, to start again.
 
 --------------------------------------------------------------------------------
 =end
 
+#require 'rubygems'
+
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'ld4l_browser_data'
-require 'ld4l_browser_data/ingesting'
+require 'ld4l_browser_data/indexing'
 
 #
 # ---------------------------------------------------------
@@ -23,4 +23,4 @@ require 'ld4l_browser_data/ingesting'
 # ---------------------------------------------------------
 #
 
-Ld4lBrowserData::Ingesting::ConvertDirectoryTree.new.run
+Ld4lBrowserData::Indexing::BuildSolrIndex.new.run

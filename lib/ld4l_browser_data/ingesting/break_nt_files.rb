@@ -32,7 +32,7 @@ require_relative 'break_nt_files/file_breaker'
 require_relative 'report'
 
 module Ld4lBrowserData
-  module Ld4lIngesting
+  module Ingesting
     class BreakNtFiles
       include Utilities::MainClassHelper
 
@@ -52,12 +52,12 @@ module Ld4lBrowserData
       end
 
       def process_arguments()
-        parse_arguments(ARGV)
+        parse_arguments(:source, :target, :report, :max_triples)
         @source_dir = validate_input_directory(:source, "source_directory")
         @target_dir = validate_output_directory(:target, "target_directory")
         @report = Report.new('ld4l_break_nt_files', validate_output_file(:report, "report file"))
         @max_triples = validate_integer(:key => :max_triples, :label => "max_triples", :min => 100)
-        @report.log_header(ARGV)
+        @report.log_header
       end
 
       def prepare_target_directory()

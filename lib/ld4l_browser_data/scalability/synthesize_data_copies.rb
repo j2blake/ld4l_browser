@@ -29,22 +29,31 @@ module Ld4lBrowserData
           'source=<source_directory> \\',
           'target=<target_directory>[~REPLACE] \\',
           'copies=<number_of_copies> \\',
-          'report=<report_file>[~REPLACE] \\'
+          'report=<report_file>[~REPLACE] \\',
+          '[IGNORE_SURPRISES]'
         ]
       end
 
       def process_arguments()
-        parse_arguments(ARGV)
+        parse_arguments(:source, :target, :copies, :report, :IGNORE_SURPRISES)
         @source_dir = validate_input_directory(:source, "source_directory")
         @num_copies = validate_integer(:key => :copies, :label => "number_of_copies", :min => 1, :max => 26)
         @target_dir = validate_output_directory(:target, "target_directory")
         @report = Report.new('ld4l_synthesize_data_copies', validate_output_file(:report, "report file"))
-        @report.log_header(ARGV)
+        @report.log_header
       end
 
       def prepare_target_directory()
         FileUtils.rm_r(@target_dir) if Dir.exist?(@target_dir)
         Dir.mkdir(@target_dir)
+      end
+
+      def check_for_surprises
+        check_site_consistency(@args[:IGNORE_SURPRISES], {
+          'Source directory' => @source_dir,
+          'Target directory' => @target_dir,
+          'Report path' => @report
+        })
       end
 
       def make_copies
@@ -88,7 +97,8 @@ module Ld4lBrowserData
 
       def run()
         begin
-          process_arguments()
+          process_arguments
+          check_for_surprises
           begin
             prepare_target_directory
             make_copies

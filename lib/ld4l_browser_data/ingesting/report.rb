@@ -1,5 +1,5 @@
 module Ld4lBrowserData
-  module Ld4lIngesting
+  module Ingesting
     class Report
       include Utilities::ReportHelper
     end

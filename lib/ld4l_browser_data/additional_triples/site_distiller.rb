@@ -25,7 +25,7 @@ module Ld4lBrowserData
       end
 
       def process_arguments()
-        parse_arguments(ARGV)
+        parse_arguments(:source, :target, :concordance, :report)
 
         @source_dir = validate_input_directory(:source, "source_directory")
         @target_dir = validate_output_directory(:target, "target_directory")
@@ -45,7 +45,7 @@ module Ld4lBrowserData
         @work_instance_worldcat = in_target_dir('work_to_instance_to_worldcat.txt')
         @work_to_work_id = in_target_dir('work_to_workID.txt')
 
-        @report.log_header(ARGV)
+        @report.log_header
       end
 
       def create_work_to_instance()

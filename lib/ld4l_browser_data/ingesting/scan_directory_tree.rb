@@ -8,7 +8,7 @@ the syntax errors in the files.
 =end
 
 module Ld4lBrowserData
-  module Ld4lIngesting
+  module Ingesting
     class ScanDirectoryTree
       include Utilities::MainClassHelper
 
