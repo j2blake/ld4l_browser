@@ -27,7 +27,7 @@ module Ld4lBrowserData
       end
 
       def process_arguments()
-        parse_arguments(ARGV)
+        parse_arguments(:source, :report)
         @source_dir = validate_input_directory(:source, "source_directory")
         @report = Report.new('ld4l_scan_directory_tree', validate_output_file(:report, "report file"))
         @report.log_header(ARGV)

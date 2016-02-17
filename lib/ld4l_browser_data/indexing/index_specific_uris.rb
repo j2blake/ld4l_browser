@@ -23,17 +23,17 @@ module Ld4lBrowserData
           'Usage is ld4l_index_specific_uris \\',
           'source=<source_directory> \\',
           'report=<report_file>[~REPLACE] \\',
-          'IGNORE_BOOKMARKS \\',
+          'IGNORE_BOOKMARK \\',
           'CLEAR_INDEX \\',
           'IGNORE_SITE_SURPRISES \\',
         ]
       end
 
       def process_arguments()
-        parse_arguments(:source, :report, :IGNORE_BOOKMARKS, :CLEAR_INDEX, :IGNORE_SITE_SURPRISES)
+        parse_arguments(:source, :report, :IGNORE_BOOKMARK, :CLEAR_INDEX, :IGNORE_SITE_SURPRISES)
         @source_dir = validate_input_directory(:source, "source_directory")
         @report = Report.new(validate_output_file(:report, "report file"))
-        @ignore_bookmarks = @args[:IGNORE_BOOKMARKS]
+        @ignore_bookmark = @args[:IGNORE_BOOKMARK]
         @ignore_surprises = @args[:IGNORE_SITE_SURPRISES]
         @clear_index = @args[:CLEAR_INDEX]
         @report.log_header
@@ -71,7 +71,7 @@ module Ld4lBrowserData
       end
 
       def initialize_bookmark
-        @bookmark = Bookmark.new(File.basename(@source_dir), @ss, @ignore_bookmarks)
+        @bookmark = Bookmark.new(File.basename(@source_dir), @ss, @ignore_bookmark)
       end
 
       def trap_control_c

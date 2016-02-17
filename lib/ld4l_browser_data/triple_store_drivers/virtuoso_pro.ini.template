@@ -109,7 +109,7 @@ NumberOfBuffers          = <%= number_of_buffers %>
 MaxDirtyBuffers          = <%= max_dirty_buffers %>
 
 [HTTPServer]
-ServerPort                  = 80
+ServerPort                  = <%= http_port %>
 ServerRoot                  = ../vsp
 DavRoot                     = DAV
 EnabledDavVSP               = 0

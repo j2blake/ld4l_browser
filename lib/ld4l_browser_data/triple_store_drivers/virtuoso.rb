@@ -156,9 +156,10 @@ module Ld4lBrowserData
 
       def submit_the_ingest_job(ext, graph_uri)
         if ['.rdf', '.owl'].include?(ext)
-          isql("db.dba.rdf_load_rdfxml(file_to_string_output('ingest_link#{ext}'), '', '#{graph_uri}');")
+          isql("db.dba.rdf_load_rdfxml(file_to_string_output('ingest_link#{ext}'), '', '#{graph_uri}', 0, 0);")
         else
-          isql("ttlp_mt(file_to_string_output('ingest_link#{ext}'), '', '#{graph_uri}');")
+#          isql("ttlp_mt(file_to_string_output('ingest_link#{ext}'), '', '#{graph_uri}');")
+          isql("ttlp_mt(file_to_string_output('ingest_link#{ext}'), '', '#{graph_uri}', 0, 0, 6);")
         end
       end
 

@@ -62,16 +62,16 @@ module Ld4lBrowserData
         @usage_text = [
           'Usage is ld4l_build_solr_index \\',
           'report=<report_file>[~REPLACE] \\',
-          'IGNORE_BOOKMARKS \\',
+          'IGNORE_BOOKMARK \\',
           'CLEAR_INDEX \\',
           'IGNORE_SITE_SURPRISES \\',
         ]
       end
 
       def process_arguments()
-        parse_arguments(:report, :IGNORE_BOOKMARKS, :CLEAR_INDEX, :IGNORE_SITE_SURPRISES)
+        parse_arguments(:report, :IGNORE_BOOKMARK, :CLEAR_INDEX, :IGNORE_SITE_SURPRISES)
         @report = Report.new('ld4l_build_solr_index', validate_output_file(:report, "report file"))
-        @ignore_bookmarks = @args[:IGNORE_BOOKMARKS]
+        @ignore_bookmark = @args[:IGNORE_BOOKMARK]
         @ignore_surprises = @args[:IGNORE_SITE_SURPRISES]
         @clear_index = @args[:CLEAR_INDEX]
         @report.log_header
@@ -89,7 +89,7 @@ module Ld4lBrowserData
       end
 
       def initialize_bookmark
-        @bookmark = Bookmark.new(@ss, @ignore_bookmarks)
+        @bookmark = Bookmark.new(@ss, @ignore_bookmark)
       end
 
       def trap_control_c

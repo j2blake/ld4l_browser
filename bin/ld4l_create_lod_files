@@ -1,0 +1,24 @@
+#! /usr/bin/env ruby
+
+=begin rdoc
+--------------------------------------------------------------------------------
+
+Generate files of Linked Open Data from the triple-store, for the LOD server. 
+The files are created in a nested directory structure, in TTL format. When 
+servicing a request, the server will read the file into a graph, add document 
+triples, and serialize it to the requested format.
+
+--------------------------------------------------------------------------------
+=end
+
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'ld4l_browser_data'
+require 'ld4l_browser_data/generate_lod'
+
+#
+# ---------------------------------------------------------
+# MAIN ROUTINE
+# ---------------------------------------------------------
+#
+
+Ld4lBrowserData::GenerateLod::LinkedDataCreator.new.run
