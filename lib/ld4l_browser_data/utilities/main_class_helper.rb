@@ -54,8 +54,28 @@ module Ld4lBrowserData
 
         if (File.directory?(path))
           replace ||= ok_to_replace?(path)
-          user_input_error("Can't replace #{label_text} #{path}") unless replace
+          user_input_error("Fine. forget it") unless replace
           clear_directory(path)
+        else
+          Dir.mkdir(path)
+        end
+
+        path
+      end
+
+      def validate_incremental_output_directory(key, label_text)
+        output_dir = @args[key]
+        user_input_error("A value for #{key} is required.") unless output_dir
+
+        replace, path = parse_output_path(output_dir)
+        user_input_error("Can't create #{path}, parent directory doesn't exist.") unless File.directory?(File.dirname(path))
+
+        if (File.directory?(path))
+          if replace
+            clear_directory(path)
+          else
+            user_input_error("Fine. forget it") unless ok_to_reuse?(path)
+          end
         else
           Dir.mkdir(path)
         end
@@ -82,7 +102,7 @@ module Ld4lBrowserData
 
         if (File.exist?(path))
           replace ||= ok_to_replace?(path)
-          user_input_error("Can't replace #{label_text} #{path}") unless replace
+          user_input_error("Fine. forget it") unless replace
           File.delete(path)
         end
 
@@ -90,8 +110,8 @@ module Ld4lBrowserData
       end
 
       def validate_integer(props)
-        key, label, min, max = props.values_at(:key, :label, :min, :max)
-        value = @args[key]
+        key, label, min, max, default = props.values_at(:key, :label, :min, :max, :default)
+        value = @args[key] || default
         user_input_error("A value for #{label} is required.") unless value
         user_input_error("'#{value}' is not a valid integer.") unless value =~ /^-?\d+$/
         integer = value.to_i
@@ -158,8 +178,12 @@ module Ld4lBrowserData
 
       def ok_to_replace?(path)
         puts "  REPLACE #{path} (yes/no)?"
-        raise UserInputError.new("Fine. forget it") unless 'yes' == STDIN.gets.chomp
-        true
+        'yes' == STDIN.gets.chomp
+      end
+
+      def ok_to_reuse?(path)
+        puts "  ADD TO #{path} (yes/no)?"
+        'yes' == STDIN.gets.chomp
       end
 
       def user_input_error(message)

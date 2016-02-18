@@ -23,7 +23,6 @@ module Ld4lBrowserData
       include Utilities::MainClassHelper
       include Utilities::TripleStoreUser
 
-      USAGE_TEXT = 'Usage is  <> <graph_uri> <report_file> [regexp] [REPLACE]'
       DEFAULT_MATCHER = /.+\.(rdf|owl|nt|ttl)$/
       GRAPH_URI_TEMPLATE = 'http://draft.ld4l.org/%s'
       def initialize

@@ -1,3 +1,6 @@
+require "ld4l_browser_data/triple_store_drivers"
+require "ld4l_browser_data/triple_store_controller"
+
 module Ld4lBrowserData
   module Utilities
     module TripleStoreUser

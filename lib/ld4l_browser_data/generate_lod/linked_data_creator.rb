@@ -12,49 +12,52 @@ Usage: ld4l_create_lod_files <source_dir> <target_dir> [RESTART] <report_file> [
 
 --------------------------------------------------------------------------------
 =end
+require_relative 'linked_data_creator/report'
 
 module Ld4lBrowserData
   module GenerateLod
     class LinkedDataCreator
-      USAGE_TEXT = 'Usage: ld4l_create_lod_files <source_dir> <target_dir> [RESTART] <report_file> [REPLACE]'
-      def process_arguments()
-        args = Array.new(ARGV)
-        @restart = args.delete('RESTART')
-        replace_report = args.delete('REPLACE')
-
-        raise UserInputError.new(USAGE_TEXT) unless args && args.size == 3
-
-        raise UserInputError.new("#{args[0]} doesn't exist.") unless File.exist?(args[0])
-        @source_dir = File.expand_path(args[0])
-
-        @file_system_base = File.expand_path(args[1])
-
-        raise UserInputError.new("#{args[2]} already exists -- specify REPLACE") if File.exist?(args[2]) unless replace_report
-        raise UserInputError.new("Can't create #{args[2]}: no parent directory.") unless Dir.exist?(File.dirname(args[2]))
-        @report = Report.new('ld4l_create_lod_files', File.expand_path(args[2]))
-        @report.log_header(ARGV)
+      include Utilities::MainClassHelper
+      include Utilities::TripleStoreUser
+      def initialize
+        @usage_text = [
+          'Usage is ld4l_create_lod_files \\',
+          'source=<source_directory> \\',
+          'target=<target_directory>[~REPLACE] \\',
+          'report=<report_file>[~REPLACE] \\',
+          'IGNORE_BOOKMARK \\',
+          'IGNORE_SITE_SURPRISES \\',
+        ]
 
         @uri_prefix = 'http://draft.ld4l.org/'
       end
 
-      def connect_triple_store
-        selected = Ld4lBrowserData::TripleStoreController::Selector.selected
-        raise UserInputError.new("No triple store selected.") unless selected
+      def process_arguments()
+        parse_arguments(:source, :target, :report, :IGNORE_BOOKMARK, :IGNORE_SITE_SURPRISES)
+        @source_dir = validate_input_directory(:source, "source_directory")
+        @target_dir = validate_incremental_output_directory(:target, "target_directory")
+        @report = Report.new('ld4l_create_lod_files', validate_output_file(:report, "report file"))
+        @ignore_bookmark = @args[:IGNORE_BOOKMARK]
+        @ignore_surprises = @args[:IGNORE_SITE_SURPRISES]
+        @report.log_header
+      end
 
-        Ld4lBrowserData::TripleStoreDrivers.select(selected)
-        @ts = TripleStoreDrivers.selected
-
-        raise IllegalStateError.new("#{@ts} is not running") unless @ts.running?
-        @report.logit("Connected to triple-store: #{@ts}")
+      def check_for_surprises
+        check_site_consistency(@ignore_surprises, {
+          'Triple store' => @ts,
+          'Source directory' => @source_dir,
+          'Target directory' => @target_dir,
+          'Report path' => @report
+        })
       end
 
       def connect_file_system
-        @files = FileSystem.new(@file_system_base, @uri_prefix)
-        @report.logit("Connected to file system at #{@file_system_base}")
+        @files = FileSystem.new(@target_dir, @uri_prefix)
+        @report.logit("Connected to file system at #{@target_dir}")
       end
 
       def initialize_bookmark
-        @bookmark = Bookmark.new(File.basename(@source_dir), @files, @restart)
+        @bookmark = Bookmark.new(File.basename(@source_dir), @files, @ignore_bookmark)
         @report.log_bookmark(@bookmark)
       end
 
@@ -99,7 +102,7 @@ module Ld4lBrowserData
         source_dir = File.expand_path('../void',__FILE__)
         Dir.chdir(source_dir) do |dir|
           Dir.foreach('.') do |filename|
-            FileUtils.cp(filename, @file_system_base) if filename.start_with? 'void'
+            FileUtils.cp(filename, @target_dir) if filename.start_with? 'void'
           end
         end
       end
