@@ -81,6 +81,9 @@ module Ld4lBrowserData
           name.gsub(ENCODE_REGEX) { |c| char2hex(c) }.tr('/:.', '=+,')
         end
 
+        def close
+          # nothing to do
+        end
       end
     end
   end

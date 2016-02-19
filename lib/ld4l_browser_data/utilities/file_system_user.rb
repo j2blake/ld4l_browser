@@ -25,6 +25,7 @@ Each file system class must satisfy these calls:
 =end
 
 require_relative 'file_systems/mock_fs'
+require_relative 'file_systems/mysql_fs'
 require_relative 'file_systems/zip_fs'
 
 module Ld4lBrowserData
@@ -64,7 +65,6 @@ module Ld4lBrowserData
       end
 
       def validate_fs_defs()
-        bogus "Settings: #{@fs_defs.inspect}"
         raise SettingsError.new("Found no settings files!") if @fs_defs.empty?
         @fs_defs.each do |k, v|
           raise SettingsError.new("Settings file '#{k}' has no settings") unless v

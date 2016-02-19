@@ -52,11 +52,6 @@ module Ld4lBrowserData
         })
       end
 
-#      def connect_file_system
-#        @files = FileSystem.new(@target_dir, @uri_prefix)
-#        @report.logit("Connected to file system at #{@target_dir}")
-#      end
-#
       def initialize_bookmark
         @bookmark = Bookmark.new(File.basename(@source_dir), @files, @ignore_bookmark)
         @report.log_bookmark(@bookmark)
@@ -131,6 +126,7 @@ module Ld4lBrowserData
           puts "ERROR: #{$!}"
           puts
         ensure
+          @files.close if @files
           if @report
             @report.summarize_http_status(@ts)
             @report.close
