@@ -72,11 +72,10 @@ module Ld4lBrowserData
       end
 
       def write_it_out
-        path = @files.path_for(@uri)
-        FileUtils.makedirs(File.dirname(path))
-        RDF::Writer.open(path) do |writer|
+        content = RDF::Writer.for(file_extension: "ttl").buffer do |writer|
           writer << @graph
         end
+        @files.write(@uri, content)
       end
 
       def run()

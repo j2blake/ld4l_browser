@@ -13,10 +13,11 @@ module Ld4lBrowserData
       attr_reader :offset
       attr_reader :start
       def initialize(process_id, files, restart)
-        bookmark_path = "bookmark_linked_data_generator_#{process_id}.json"
-        @path = File.join(files.path, 'bookmarks', bookmark_path)
+        @key = process_id.to_s
+        @files = files
 
-        if File.exist?(@path) && !restart
+        @settings = @files.get_bookmark(@key)
+        if @settings && !restart
           load
         else
           reset
@@ -27,12 +28,9 @@ module Ld4lBrowserData
       end
 
       def load()
-        File.open(@path) do |f|
-          map = JSON.load(f, nil, :symbolize_names => true)
-          @filename = map[:filename] || ''
-          @offset = map[:offset] || 0
-          @complete = map[:complete] || false
-        end
+        @filename = @settings[:filename] || ''
+        @offset = @settings[:offset] || 0
+        @complete = @settings[:complete] || false
       end
 
       def reset
@@ -42,9 +40,7 @@ module Ld4lBrowserData
       end
 
       def persist()
-        File.open(@path, 'w') do |f|
-          JSON.dump(map_it, f)
-        end
+        @files.set_bookmark(@key, map_it)
       end
 
       def map_it
@@ -72,7 +68,7 @@ module Ld4lBrowserData
       end
 
       def clear()
-        File.delete(@path)
+        @files.clear_bookmark(@key)
       end
     end
   end

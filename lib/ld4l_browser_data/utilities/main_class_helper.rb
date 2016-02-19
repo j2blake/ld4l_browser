@@ -109,6 +109,14 @@ module Ld4lBrowserData
         path
       end
 
+      def validate_file_system(key, label_text)
+        fs_choice = @args[key]
+        user_input_error("A value for #{key} is required.") unless fs_choice
+        
+        fs_key, options = parse_options(fs_choice)
+        connect_file_system(fs_key)
+      end
+
       def validate_integer(props)
         key, label, min, max, default = props.values_at(:key, :label, :min, :max, :default)
         value = @args[key] || default
@@ -176,6 +184,11 @@ module Ld4lBrowserData
         [parts[1] == 'IGNORE_SURPRISE', parts[0].downcase]
       end
 
+      def parse_options(input)
+        parts = input.split('~')
+        [parts.shift, parts]
+      end
+      
       def ok_to_replace?(path)
         puts "  REPLACE #{path} (yes/no)?"
         'yes' == STDIN.gets.chomp

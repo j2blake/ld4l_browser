@@ -3,6 +3,7 @@ require 'find'
 require 'rdf'
 require 'rdf/raptor'
 
+require "ld4l_browser_data/utilities/file_system_user"
 require "ld4l_browser_data/utilities/main_class_helper"
 require "ld4l_browser_data/utilities/report_helper"
 require "ld4l_browser_data/utilities/triple_store_user"

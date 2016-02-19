@@ -17,13 +17,14 @@ require_relative 'linked_data_creator/report'
 module Ld4lBrowserData
   module GenerateLod
     class LinkedDataCreator
+      include Utilities::FileSystemUser
       include Utilities::MainClassHelper
       include Utilities::TripleStoreUser
       def initialize
         @usage_text = [
           'Usage is ld4l_create_lod_files \\',
           'source=<source_directory> \\',
-          'target=<target_directory>[~REPLACE] \\',
+          'file_system=<file_system_key>[~REPLACE] \\',
           'report=<report_file>[~REPLACE] \\',
           'IGNORE_BOOKMARK \\',
           'IGNORE_SITE_SURPRISES \\',
@@ -33,9 +34,9 @@ module Ld4lBrowserData
       end
 
       def process_arguments()
-        parse_arguments(:source, :target, :report, :IGNORE_BOOKMARK, :IGNORE_SITE_SURPRISES)
+        parse_arguments(:source, :file_system, :report, :IGNORE_BOOKMARK, :IGNORE_SITE_SURPRISES)
         @source_dir = validate_input_directory(:source, "source_directory")
-        @target_dir = validate_incremental_output_directory(:target, "target_directory")
+        @files = validate_file_system(:file_system, "file system key")
         @report = Report.new('ld4l_create_lod_files', validate_output_file(:report, "report file"))
         @ignore_bookmark = @args[:IGNORE_BOOKMARK]
         @ignore_surprises = @args[:IGNORE_SITE_SURPRISES]
@@ -46,16 +47,16 @@ module Ld4lBrowserData
         check_site_consistency(@ignore_surprises, {
           'Triple store' => @ts,
           'Source directory' => @source_dir,
-          'Target directory' => @target_dir,
+          'File system' => @files,
           'Report path' => @report
         })
       end
 
-      def connect_file_system
-        @files = FileSystem.new(@target_dir, @uri_prefix)
-        @report.logit("Connected to file system at #{@target_dir}")
-      end
-
+#      def connect_file_system
+#        @files = FileSystem.new(@target_dir, @uri_prefix)
+#        @report.logit("Connected to file system at #{@target_dir}")
+#      end
+#
       def initialize_bookmark
         @bookmark = Bookmark.new(File.basename(@source_dir), @files, @ignore_bookmark)
         @report.log_bookmark(@bookmark)
@@ -102,7 +103,7 @@ module Ld4lBrowserData
         source_dir = File.expand_path('../void',__FILE__)
         Dir.chdir(source_dir) do |dir|
           Dir.foreach('.') do |filename|
-            FileUtils.cp(filename, @target_dir) if filename.start_with? 'void'
+            @files.set_void(filename, File.read(filename)) if filename.start_with? 'void'
           end
         end
       end
@@ -114,7 +115,7 @@ module Ld4lBrowserData
       def setup()
         process_arguments
         connect_triple_store
-        connect_file_system
+#        connect_file_system
         initialize_bookmark
         trap_control_c
       end
@@ -125,7 +126,7 @@ module Ld4lBrowserData
           iterate_through_uris
           place_void_files
           report
-        rescue UserInputError, IllegalStateError
+        rescue UserInputError, IllegalStateError, SettingsError
           puts
           puts "ERROR: #{$!}"
           puts
