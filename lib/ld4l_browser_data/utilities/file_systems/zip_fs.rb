@@ -15,13 +15,28 @@ module Ld4lBrowserData
           @prefix = @settings[:prefix]
         end
 
+        # return a hash
         def get_bookmark(key)
-          bogus "get_bookmark(#{key})"
-          nil
+          path = bookmark_path(key)
+          if File.exist?(path)
+            File.open(path) do |f|
+              JSON.load(f, nil, :symbolize_names => true)
+            end
+          else
+            nil
+          end
         end
 
+        # contents is a hash
         def set_bookmark(key, contents)
-          bogus "set_bookmark(#{key}, #{contents.inspect})"
+          path = bookmark_path(key)
+          File.open(path, 'w') do |f|
+            JSON.dump(contents, f)
+          end
+        end
+        
+        def bookmark_path(key)
+          File.join(@base_dir, 'bookmark_' + encode(key))
         end
 
         def acceptable?(uri)
