@@ -23,7 +23,17 @@ module Ld4lBrowserData
       #  end
 
       def add_document(doc)
-        @solr.add doc
+        begin
+          @solr.add doc
+        rescue RSolr::Error::Http
+          puts "solr failed 1"
+          begin
+            @solr.add doc
+          rescue RSolr::Error::Http
+            puts "solr failed 2"
+            @solr.add doc
+          end
+        end
       end
 
       def get_document(id)

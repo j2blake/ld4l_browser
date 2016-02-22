@@ -61,6 +61,7 @@ module Ld4lBrowserData
 
                 @report.record_uri(uri, f.lineno, fn)
                 @bookmark.update(fn, f.lineno) if 0 == (f.lineno % 100)
+                @report.progress(fn, f.lineno) if 0 == (f.lineno % 1000)
               end
             end
           end

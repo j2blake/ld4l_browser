@@ -4,7 +4,7 @@ module Ld4lBrowserData
       class Report
         include Utilities::ReportHelper
         def initialize(path)
-          super('ld4l_build_solr_index', path)
+          super('ld4l_index_specific_uris', path)
           @good_uri_count = 0
         end
 
@@ -18,6 +18,10 @@ module Ld4lBrowserData
 
         def record_uri(uri, line_number, filename)
           @good_uri_count += 1
+        end
+        
+        def progress(fn, line_number)
+          logit("line %d in %s" % [line_number, fn])
         end
 
         def log_document_error(type, uri, doc, error)
