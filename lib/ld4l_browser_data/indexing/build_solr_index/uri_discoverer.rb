@@ -62,7 +62,7 @@ module Ld4lBrowserData
           @bindings.each_pair do |k, v|
             q.bind_uri(k, v)
           end
-          q.execute(@ts).map { |r| r['uri'] }
+          q.select(@ts).map { |r| r['uri'] }
         end
 
         def offset

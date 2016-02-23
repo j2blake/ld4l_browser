@@ -14,6 +14,7 @@ module Ld4lBrowserData
     class SampleSolrIndex
       class UriDiscoverer
         include Enumerable
+        include Utilities::TripleStoreUser
 
         QUERY_FIND_WORKS = <<-END
         PREFIX ld4l: <http://bib.ld4l.org/ontology/>
@@ -48,7 +49,7 @@ module Ld4lBrowserData
         end
 
         def find_uris(query)
-          QueryRunner.new(query).execute(@ts).map { |r| r['uri'] }
+          QueryRunner.new(query).select(@ts).map { |r| r['uri'] }
         end
       end
     end

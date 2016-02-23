@@ -14,11 +14,13 @@ module Ld4lBrowserData
   module Indexing
     class IndexSpecificUris
       class UriDiscoverer
+        include Utilities::TripleStoreUser
+
         QUERY_TYPES = <<-END
-        SELECT ?type 
-        WHERE {
-          ?uri a ?type .
-        } LIMIT 100
+          SELECT ?type 
+          WHERE {
+            ?uri a ?type .
+          } LIMIT 100
         END
 
         TYPE_WORK = 'http://bib.ld4l.org/ontology/Work'
@@ -100,7 +102,7 @@ module Ld4lBrowserData
         end
 
         def find_type(uri)
-          QueryRunner.new(QUERY_TYPES).bind_uri('uri', uri).execute(@ts).each do |row|
+          QueryRunner.new(QUERY_TYPES).bind_uri('uri', uri).select(@ts).each do |row|
             return :work if TYPE_WORK == row['type']
             return :instance if TYPE_INSTANCE == row['type']
             return :agent if TYPE_PERSON == row['type']

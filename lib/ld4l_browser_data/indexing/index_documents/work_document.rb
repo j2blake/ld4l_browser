@@ -129,7 +129,7 @@ module Ld4lBrowserData
 
         def get_topics
           @topics = []
-          results = QueryRunner.new(QUERY_WORK_TOPIC).bind_uri('work', @uri).execute(@ts)
+          results = QueryRunner.new(QUERY_WORK_TOPIC).bind_uri('work', @uri).select(@ts)
           results.each do |row|
             if row['topic']
               t = row['topic']
@@ -145,7 +145,7 @@ module Ld4lBrowserData
 
         def get_instances()
           @instances = []
-          results = QueryRunner.new(QUERY_INSTANCES_OF_WORK).bind_uri('work', @uri).execute(@ts)
+          results = QueryRunner.new(QUERY_INSTANCES_OF_WORK).bind_uri('work', @uri).select(@ts)
           results.each do |row|
             instance_uri = row['instance']
             if (instance_uri)
@@ -161,7 +161,7 @@ module Ld4lBrowserData
         end
 
         def get_extent_for_instance(instance_uri)
-          results = QueryRunner.new(QUERY_EXTENT_OF_INSTANCE).bind_uri('i', instance_uri).execute(@ts)
+          results = QueryRunner.new(QUERY_EXTENT_OF_INSTANCE).bind_uri('i', instance_uri).select(@ts)
           if results.empty?
             nil
           else
@@ -172,7 +172,7 @@ module Ld4lBrowserData
         def get_creators_and_contributors()
           @creators = []
           @contributors = []
-          results = QueryRunner.new(QUERY_CONTRIBUTORS).bind_uri('w', @uri).execute(@ts)
+          results = QueryRunner.new(QUERY_CONTRIBUTORS).bind_uri('w', @uri).select(@ts)
           results.each do |row|
             name = row['name']
             unless name
@@ -192,7 +192,7 @@ module Ld4lBrowserData
 
         def get_languages()
           @languages = []
-          results = QueryRunner.new(QUERY_LANGUAGES).bind_uri('w', @uri).execute(@ts)
+          results = QueryRunner.new(QUERY_LANGUAGES).bind_uri('w', @uri).select(@ts)
           results.each do |row|
             if row['lang']
               @languages << (row['label'] || LanguageReference.lookup(row['lang']) || DocumentFactory.uri_localname(row['lang']))
@@ -202,7 +202,7 @@ module Ld4lBrowserData
 
         def get_related_works()
           @related = []
-          results = QueryRunner.new(QUERY_RELATED_WORKS).bind_uri('w', @uri).execute(@ts)
+          results = QueryRunner.new(QUERY_RELATED_WORKS).bind_uri('w', @uri).select(@ts)
           results.each do |row|
             uri = row['related']
             related = {}

@@ -149,7 +149,7 @@ module Ld4lBrowserData
           @identifiers = []
           @properties.each do |prop|
             if prop['p'] == PROP_IDENTIFIED_BY
-              results = QueryRunner.new(QUERY_IDENTIFIER_CONTENTS).bind_uri('id', prop['o']).execute(@ts)
+              results = QueryRunner.new(QUERY_IDENTIFIER_CONTENTS).bind_uri('id', prop['o']).select(@ts)
               types = []
               value = nil
               results.each do |row|
@@ -166,7 +166,7 @@ module Ld4lBrowserData
           @publishers = []
           @properties.each do |prop|
             if prop['p'] == PROP_HAS_PROVISION
-              results = QueryRunner.new(QUERY_PUBLISHER_PROVISION).bind_uri('provision', prop['o']).execute(@ts)
+              results = QueryRunner.new(QUERY_PUBLISHER_PROVISION).bind_uri('provision', prop['o']).select(@ts)
               results.each do |row|
                 parts = []
                 parts << row['agent_name'] if row['agent_name']
@@ -179,7 +179,7 @@ module Ld4lBrowserData
         end
 
         def get_holdings()
-          results = QueryRunner.new(QUERY_SHELF_MARK).bind_uri('instance', @uri).execute(@ts)
+          results = QueryRunner.new(QUERY_SHELF_MARK).bind_uri('instance', @uri).select(@ts)
           @holdings = results.each.map {|row| row['value'] }.select{|v| v}
         end
 
@@ -200,7 +200,7 @@ module Ld4lBrowserData
           @stackview_scores = []
           @properties.each do |prop|
             if prop['p'] == PROP_HAS_ANNOTATION
-              results = QueryRunner.new(QUERY_STACKVIEW_SCORE).bind_uri('annotation', prop['o']).execute(@ts)
+              results = QueryRunner.new(QUERY_STACKVIEW_SCORE).bind_uri('annotation', prop['o']).select(@ts)
               results.each do |row|
                 @stackview_scores << row['score'].to_i if row['score']
               end

@@ -10,7 +10,6 @@ require "ld4l_browser_data/utilities/triple_store_user"
 
 require_relative "indexing/common/counts"
 require_relative "indexing/common/language_reference"
-require_relative "indexing/common/query_runner"
 require_relative "indexing/common/topic_reference"
 
 require_relative "indexing/index_documents"

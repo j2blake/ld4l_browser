@@ -9,17 +9,19 @@ Grab some statistics from the triple-store.
 module Ld4lBrowserData
   module GenerateLod
     class Counts
+      include Utilities::TripleStoreUser
+
       QUERY_COUNT_TRIPLES = <<-END
-      SELECT (count(?s) as ?count)
-      WHERE { 
-        ?s ?p ?o .
-      }
+        SELECT (count(?s) as ?count)
+        WHERE { 
+          ?s ?p ?o .
+        }
       END
       QUERY_COUNT_SUBJECTS = <<-END
-      SELECT (count(distinct ?s) as ?count)
-      WHERE { 
-        ?s ?p ?o
-      }
+        SELECT (count(distinct ?s) as ?count)
+        WHERE { 
+          ?s ?p ?o
+        }
       END
       def initialize(ts)
         @ts = ts
@@ -29,8 +31,7 @@ module Ld4lBrowserData
       end
 
       def run_query(q)
-        query = QueryRunner.new(q)
-        query.select(@ts).map { |row| row['count'] }[0]
+        QueryRunner.new(q).select(@ts).map { |row| row['count'] }[0]
       end
 
       def values

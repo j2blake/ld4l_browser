@@ -8,22 +8,22 @@ module Ld4lBrowserData
         PROP_BIRTHDATE = 'http://schema.org/birthDate'
 
         QUERY_CONTRIBUTIONS = <<-END
-      PREFIX ld4l: <http://bib.ld4l.org/ontology/>
-      PREFIX prov: <http://www.w3.org/ns/prov#>
-      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-      SELECT ?work ?title ?isAuthor 
-      WHERE { 
-        ?work ld4l:hasContribution ?c .
-        ?c prov:agent ?agent .
-        OPTIONAL {
-          ?work ld4l:hasTitle ?t .
-          ?t rdfs:label ?title .
-        }
-        OPTIONAL { 
-          ?c a ld4l:AuthorContribution . 
-          BIND(?c as ?isAuthor) 
-        }
-      } LIMIT 1000
+          PREFIX ld4l: <http://bib.ld4l.org/ontology/>
+          PREFIX prov: <http://www.w3.org/ns/prov#>
+          PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+          SELECT ?work ?title ?isAuthor 
+          WHERE { 
+            ?work ld4l:hasContribution ?c .
+            ?c prov:agent ?agent .
+            OPTIONAL {
+              ?work ld4l:hasTitle ?t .
+              ?t rdfs:label ?title .
+            }
+            OPTIONAL { 
+              ?c a ld4l:AuthorContribution . 
+              BIND(?c as ?isAuthor) 
+            }
+          } LIMIT 1000
         END
         #
         def initialize(uri, ts, stats)
@@ -67,7 +67,7 @@ module Ld4lBrowserData
         def get_created_and_contributed
           @created = []
           @contributed = []
-          results = QueryRunner.new(QUERY_CONTRIBUTIONS).bind_uri('agent', @uri).execute(@ts)
+          results = QueryRunner.new(QUERY_CONTRIBUTIONS).bind_uri('agent', @uri).select(@ts)
           results.each do |row|
             title = row['title']
             unless title
