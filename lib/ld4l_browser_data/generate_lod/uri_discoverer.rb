@@ -11,9 +11,9 @@ As each new file is opened, persist the bookmark.
 module Ld4lBrowserData
   module GenerateLod
     class UriDiscoverer
-      def initialize(ts, source_dir, bookmark, report)
+      def initialize(ts, source_files, bookmark, report)
         @ts = ts
-        @source_dir = source_dir
+        @source_files = source_files
         @bookmark = bookmark
         @report = report
         @skipping_files = true
@@ -25,20 +25,18 @@ module Ld4lBrowserData
           @report.nothing_to_do
           return
         end
-        Dir.chdir(@source_dir) do |d|
-          Dir.entries(d).sort.each do |fn|
-            next if skip_files(fn)
-            next if invalid_file(fn)
-            @report.next_file(fn)
+        @source_files.each do |f|
+          fn = File.basename(f.path)
+          next if skip_files(fn)
+          next if invalid_file(fn)
+          @report.next_file(fn)
 
-            f = File.new(fn)
-            f.each do |line|
-              next if skip_lines(f)
-              uri = line.split(' ')[0]
-              yield uri
-              @report.record_uri(uri, f.lineno, fn)
-              @bookmark.update(fn, f.lineno) if 0 == (f.lineno % 100)
-            end
+          f.each do |line|
+            next if skip_lines(f)
+            uri = line.split(' ')[0]
+            yield uri
+            @report.record_uri(uri, f.lineno, fn)
+            @bookmark.update(fn, f.lineno) if 0 == (f.lineno % 100)
           end
         end
         @bookmark.complete

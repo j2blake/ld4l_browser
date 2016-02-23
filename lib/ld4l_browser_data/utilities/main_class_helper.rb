@@ -24,8 +24,7 @@ module Ld4lBrowserData
       end
 
       def validate_input_directory(key, label_text)
-        input_dir = @args[key]
-        user_input_error("A value for #{key} is required.") unless input_dir
+        input_dir = require_value(key)
 
         path = File.expand_path(input_dir)
         user_input_error("#{path} is not a directory.") unless File.directory?(path)
@@ -34,9 +33,7 @@ module Ld4lBrowserData
       end
 
       def validate_input_directories(key, label_text)
-        input_dirs = @args[key]
-        user_input_error("A value for #{key} is required.") unless input_dirs
-
+        input_dirs = require_value(key)
         paths = input_dirs.split(',').map {|d| File.expand_path(d) }
         paths.each do |path|
           user_input_error("#{path} is not a directory.") unless File.directory?(path)
@@ -46,9 +43,7 @@ module Ld4lBrowserData
       end
 
       def validate_output_directory(key, label_text)
-        output_dir = @args[key]
-        user_input_error("A value for #{key} is required.") unless output_dir
-
+        output_dir = require_value(key)
         replace, path = parse_output_path(output_dir)
         user_input_error("Can't create #{path}, parent directory doesn't exist.") unless File.directory?(File.dirname(path))
 
@@ -64,9 +59,7 @@ module Ld4lBrowserData
       end
 
       def validate_incremental_output_directory(key, label_text)
-        output_dir = @args[key]
-        user_input_error("A value for #{key} is required.") unless output_dir
-
+        output_dir = require_value(key)
         replace, path = parse_output_path(output_dir)
         user_input_error("Can't create #{path}, parent directory doesn't exist.") unless File.directory?(File.dirname(path))
 
@@ -84,19 +77,22 @@ module Ld4lBrowserData
       end
 
       def validate_input_file(key, label_text)
-        input_file = @args[key]
-        user_input_error("A value for #{key} is required.") unless input_file
-
+        input_file = require_value(key)
         path = File.expand_path(input_file)
         user_input_error("#{path} does not exist.") unless File.exist?(path)
 
         path
       end
 
+      def validate_input_source(key, label_text)
+        input_source = require_value(key)
+        path = File.expand_path(input_source)
+        user_input_error("#{path} does not exist.") unless File.exist?(path)
+        path
+      end
+      
       def validate_output_file(key, label_text)
-        output_file = @args[key]
-        user_input_error("A value for #{key} is required.") unless output_file
-
+        output_file = require_value(key)
         replace, path = parse_output_path(output_file)
         user_input_error("Can't create #{path}, parent directory doesn't exist.") unless File.directory?(File.dirname(path))
 
@@ -110,9 +106,7 @@ module Ld4lBrowserData
       end
 
       def validate_file_system(key, label_text)
-        fs_choice = @args[key]
-        user_input_error("A value for #{key} is required.") unless fs_choice
-        
+        fs_choice = require_value(key)
         fs_key, options = parse_options(fs_choice)
         connect_file_system(fs_key)
       end
@@ -136,6 +130,12 @@ module Ld4lBrowserData
         value
       end
 
+      def require_value(key)
+        value = @args[key]
+        user_input_error("A value for #{key} is required.") unless value
+        value
+      end
+      
       def site_names
         ['cornell', 'harvard', 'stanford']
       end

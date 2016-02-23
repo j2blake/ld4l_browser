@@ -7,12 +7,10 @@ servicing a request, the server will read the file into a graph, add document
 triples, and serialize it to the requested format.
 
 --------------------------------------------------------------------------------
-
-Usage: ld4l_create_lod_files <source_dir> <target_dir> [RESTART] <report_file> [REPLACE]
-
---------------------------------------------------------------------------------
 =end
 require_relative 'linked_data_creator/report'
+require_relative 'linked_data_creator/source_files'
+
 
 module Ld4lBrowserData
   module GenerateLod
@@ -23,7 +21,7 @@ module Ld4lBrowserData
       def initialize
         @usage_text = [
           'Usage is ld4l_create_lod_files \\',
-          'source=<source_directory> \\',
+          'source=<source_file_or_directory> \\',
           'file_system=<file_system_key>[~REPLACE] \\',
           'report=<report_file>[~REPLACE] \\',
           'IGNORE_BOOKMARK \\',
@@ -35,7 +33,7 @@ module Ld4lBrowserData
 
       def process_arguments()
         parse_arguments(:source, :file_system, :report, :IGNORE_BOOKMARK, :IGNORE_SITE_SURPRISES)
-        @source_dir = validate_input_directory(:source, "source_directory")
+        @source_files = SourceFiles.new(validate_input_source(:source, "source_file_or_directory"))
         @files = validate_file_system(:file_system, "file system key")
         @report = Report.new('ld4l_create_lod_files', validate_output_file(:report, "report file"))
         @ignore_bookmark = @args[:IGNORE_BOOKMARK]
@@ -46,14 +44,14 @@ module Ld4lBrowserData
       def check_for_surprises
         check_site_consistency(@ignore_surprises, {
           'Triple store' => @ts,
-          'Source directory' => @source_dir,
+          'Source file or directory' => @source_files,
           'File system' => @files,
           'Report path' => @report
         })
       end
 
       def initialize_bookmark
-        @bookmark = Bookmark.new(File.basename(@source_dir), @files, @ignore_bookmark)
+        @bookmark = Bookmark.new(@source_files.basename, @files, @ignore_bookmark)
         @report.log_bookmark(@bookmark)
       end
 
@@ -66,7 +64,7 @@ module Ld4lBrowserData
 
       def iterate_through_uris
         puts "Beginning processing. Press ^c to interrupt."
-        @uris = UriDiscoverer.new(@ts, @source_dir, @bookmark, @report)
+        @uris = UriDiscoverer.new(@ts, @source_files, @bookmark, @report)
         @uris.each do |uri|
           if @interrupted
             process_interruption
@@ -95,8 +93,8 @@ module Ld4lBrowserData
       end
 
       def place_void_files
-        source_dir = File.expand_path('../void',__FILE__)
-        Dir.chdir(source_dir) do |dir|
+        void_dir = File.expand_path('../void',__FILE__)
+        Dir.chdir(void_dir) do |dir|
           Dir.foreach('.') do |filename|
             @files.set_void(filename, File.read(filename)) if filename.start_with? 'void'
           end
@@ -110,7 +108,6 @@ module Ld4lBrowserData
       def setup()
         process_arguments
         connect_triple_store
-#        connect_file_system
         initialize_bookmark
         trap_control_c
       end

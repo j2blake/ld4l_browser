@@ -104,6 +104,7 @@ module Ld4lBrowserData
           first = bookmark.start[:filename]
           first = 'FIRST' if first.empty?
           last = bookmark.filename
+          last = 'LAST' if last.empty?
           how_many = @bad_uri_count + @failed_uri_count + @good_uri_count
           if status == :complete
             logit("Generated for URIs from %s to %s: processed %d URIs." % [first, last, how_many])
