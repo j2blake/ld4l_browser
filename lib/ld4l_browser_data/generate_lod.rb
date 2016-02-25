@@ -1,7 +1,7 @@
 require 'fileutils'
 require 'find'
 require 'rdf'
-require 'rdf/raptor'
+require 'rdf/turtle'
 
 require "ld4l_browser_data/utilities/file_system_user"
 require "ld4l_browser_data/utilities/main_class_helper"
