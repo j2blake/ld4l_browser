@@ -55,7 +55,8 @@ module Ld4lBrowserData
         if @skipping_lines
           if f.lineno >= @bookmark.offset
             @skipping_lines = false
-            @report.start_at_bookmark(File.basename(f.path), f.lineno)
+            @bookmark.update(File.basename(f.path), f.lineno)
+            @report.start_at_bookmark(@bookmark)
           end
         end
         @skipping_lines

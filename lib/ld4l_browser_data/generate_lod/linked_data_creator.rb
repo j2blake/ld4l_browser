@@ -11,7 +11,6 @@ triples, and serialize it to the requested format.
 require_relative 'linked_data_creator/report'
 require_relative 'linked_data_creator/source_files'
 
-
 module Ld4lBrowserData
   module GenerateLod
     class LinkedDataCreator
@@ -67,29 +66,19 @@ module Ld4lBrowserData
         @uris = UriDiscoverer.new(@ts, @source_files, @bookmark, @report)
         @uris.each do |uri|
           if @interrupted
-            process_interruption
+            @report.summarize(@bookmark, :interrupted)
             break
           else
             begin
               UriProcessor.new(@ts, @files, @report, uri).run
             rescue
-              process_exception
-              break
+              @report.summarize(@bookmark, :exception)
+              raise $!
             end
           end
         end
         @report.summarize(@bookmark, :complete)
         @report.logit("Complete")
-      end
-
-      def process_interruption
-        @bookmark.persist
-        @report.summarize(@bookmark, :interrupted)
-      end
-
-      def process_exception
-        @bookmark.persist
-        @report.summarize(@bookmark, :exception)
       end
 
       def place_void_files

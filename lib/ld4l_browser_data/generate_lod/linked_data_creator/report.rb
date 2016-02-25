@@ -10,27 +10,125 @@ module Ld4lBrowserData
   module GenerateLod
     class LinkedDataCreator
       class Report
+        class NamedSize
+          attr_reader :name
+          attr_reader :size
+          def initialize(name, size)
+            @name = name
+            @size = size
+          end
+
+          def update(name, size)
+            @name = name
+            @size = size
+          end
+
+          def to_s
+            "%5d (%s)" % [@size, @name]
+          end
+        end
+
+        class Largest < NamedSize
+          def update(name, size)
+            if @size < size
+              super
+            end
+          end
+        end
+
+        class Smallest < NamedSize
+          def update(name, size)
+            if @size < 0 || @size > size
+              super
+            end
+          end
+        end
+
+        class UriCounter
+          attr_reader :good
+          attr_reader :bad
+          attr_reader :failed
+          def initialize
+            @good = 0
+            @bad = 0
+            @failed = 0
+          end
+
+          def another_good
+            @good += 1
+          end
+
+          def another_bad
+            @bad += 1
+          end
+
+          def another_failed
+            @failed += 1
+          end
+
+          def any_good?
+            @good > 0
+          end
+
+          def count
+            @good + @bad + @failed
+          end
+
+          def to_s
+            "Valid URIs: %d, Invalid URIs %d, Failed URIs %d" % [@good, @bad, @failed]
+          end
+
+        end
+
+        class GraphCounter
+          attr_reader :total_triples
+          attr_reader :largest_graph
+          attr_reader :smallest_graph
+          attr_reader :how_many
+          def initialize
+            @how_many = 0
+            @total_triples = 0
+            @largest_graph = Largest.new('NONE', -1)
+            @smallest_graph = Smallest.new('NONE', -1)
+          end
+
+          def add(uri, graph)
+            @how_many += 1
+            @total_triples += graph.count
+            @largest_graph.update(uri, graph.count)
+            @smallest_graph.update(uri, graph.count)
+          end
+
+          def to_s
+            if @total_triples == 0
+              " Triples: 0 "
+            else
+              " Triples: %d \nAverage graph size: %d, \n   smallest: %s, \n   largest:  %s" % [
+                @total_triples,
+                @total_triples / @how_many,
+                @smallest_graph,
+                @largest_graph
+              ]
+            end
+          end
+        end
+
+        class ContentCounter
+          def add(uri, content)
+          end
+        end
+
         include Utilities::ReportHelper
-        attr_reader :bad_uri_count
-        attr_reader :failed_uri_count
-        attr_reader :good_uri_count
-        attr_reader :triples_count
+
         def initialize(main_routine, path)
           super(main_routine, path)
 
-          @bad_uri_count = 0
-          @failed_uri_count = 0
-          @good_uri_count = 0
-          @triples_count = 0
-          @largest_graph = 0
-          @smallest_graph = 0
-          @uri_of_largest_graph = "NO URIs"
-          @uri_of_smallest_graph = "NO URIs"
+          @uri_counter = UriCounter.new
+          @graph_counter = GraphCounter.new
+          @content_counter = ContentCounter.new
 
           @current_filename = 'NO FILE'
           @current_line_number = 0
-
-          reset_consistent_failure_count
         end
 
         def log_bookmark(bookmark)
@@ -49,55 +147,34 @@ module Ld4lBrowserData
           @current_line_number = 0
         end
 
-        def start_at_bookmark(filename, line)
-          logit("Starting at line #{line} in #{filename}")
+        def start_at_bookmark(bookmark)
+          logit("Starting at line #{bookmark.offset} in #{bookmark.filename}")
         end
 
         def record_uri(uri, line_number, filename)
           @current_line_number = line_number
         end
 
-        def wrote_it(uri, graph)
-          #  Something that the URI processor will do.
-          @good_uri_count += 1
-          @triples_count += graph.count
-          if graph.count > @largest_graph
-            @largest_graph = graph.count
-            @uri_of_largest_graph = uri
-          end
-          if graph.count < @smallest_graph || @good_uri_count == 1
-            @smallest_graph = graph.count
-            @uri_of_smallest_graph = uri
-          end
-          reset_consistent_failure_count
+        def wrote_it(uri, graph, content)
+          @uri_counter.another_good
+          @graph_counter.add(uri, graph)
+          @content_counter.add(uri, content)
           announce_progress
         end
 
         def bad_uri(uri)
-          @bad_uri_count += 1
-          check_for_consistent_failure
+          @uri_counter.another_bad
           announce_progress
         end
 
         def uri_failed(uri, e)
-          @failed_uri_count += 1
+          @uri_counter.another_failed
           logit("URI failed: '#{uri}' #{e}")
-          check_for_consistent_failure
           announce_progress
         end
 
-        def reset_consistent_failure_count
-          @consistent_failure_count = 0
-        end
-
-        def check_for_consistent_failure
-          @consistent_failure_count += 0
-          raise "Too many consistent failures" if @consistent_failure_count >= 5
-        end
-
         def announce_progress
-          count = @bad_uri_count + @failed_uri_count + @good_uri_count
-          logit("Processed #{count} URIs.") if 0 == count % 1000
+          logit("Processed #{@uri_counter.count} URIs.") if 0 == @uri_counter.count % 1000
         end
 
         def summarize(bookmark, status)
@@ -105,7 +182,7 @@ module Ld4lBrowserData
           first = 'FIRST' if first.empty?
           last = bookmark.filename
           last = 'LAST' if last.empty?
-          how_many = @bad_uri_count + @failed_uri_count + @good_uri_count
+          how_many = @uri_counter.count
           if status == :complete
             logit("Generated for URIs from %s to %s: processed %d URIs." % [first, last, how_many])
           elsif status == :interrupted
@@ -116,13 +193,8 @@ module Ld4lBrowserData
         end
 
         def stats()
-          message = "Valid URIs: %d, Invalid URIs %d, Failed URIs %d, Triples: %d" % [@good_uri_count, @bad_uri_count, @failed_uri_count, @triples_count]
-          if (@good_uri_count > 0)
-            average_size = @triples_count / @good_uri_count
-            message << "\nAverage graph size: %d, " % [average_size]
-            message << "\n   smallest: %d (%s), " % [@smallest_graph, @uri_of_smallest_graph]
-            message << "\n    largest: %d (%s)" % [@largest_graph, @uri_of_largest_graph]
-          end
+          message = @uri_counter.to_s
+          message << "\n" << @graph_counter.to_s
           logit(message)
         end
       end

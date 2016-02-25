@@ -10,8 +10,44 @@ require "ruby-xxhash"
 
 module Ld4lBrowserData
   module GenerateLod
+    class ErrorMonitor
+      def initialize
+        @error_count = 0
+        @latest = nil
+      end
+
+      def good
+        @error_count = 0
+        @latest = nil
+      end
+
+      def bad
+        @error_count += 1
+        @latest = nil
+        check_it
+      end
+
+      def failed
+        @error_count += 1
+        @latest = $!
+        check_it
+      end
+
+      def check_it
+        if @error_count >= 5
+          if @latest
+            puts @latest
+            puts @latest.backtrace.join("\n")
+          end
+          raise IllegalStateError.new("Too many consecutive failures.")
+        end
+      end
+    end
+
     class UriProcessor
       include Utilities::TripleStoreUser
+
+      @@error_monitor = ErrorMonitor.new
 
       QUERY_OUTGOING = <<-END
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -78,10 +114,10 @@ module Ld4lBrowserData
       end
 
       def write_it_out
-        content = RDF::Writer.for(file_extension: "ttl").buffer do |writer|
+        @content = RDF::Writer.for(file_extension: "ttl").buffer do |writer|
           writer << @graph
         end
-        @files.write(@uri, content)
+        @files.write(@uri, @content)
       end
 
       def run()
@@ -89,12 +125,15 @@ module Ld4lBrowserData
           if (@files.acceptable?(@uri))
             build_the_graph
             write_it_out
-            @report.wrote_it(@uri, @graph)
+            @report.wrote_it(@uri, @graph, @content)
+            @@error_monitor.good
           else
             @report.bad_uri(@uri)
+            @@error_monitor.bad
           end
         rescue
           @report.uri_failed(@uri, $!)
+          @@error_monitor.failed
         end
       end
     end
