@@ -34,7 +34,8 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'mysql2'
   spec.add_runtime_dependency 'rdf'
   spec.add_runtime_dependency 'rdf-json'
-  spec.add_runtime_dependency 'rdf-raptor'
+  spec.add_runtime_dependency 'rdf-raptor' # Can we get rid of this? Should we?
   spec.add_runtime_dependency 'rdf-rdfxml'
+  spec.add_runtime_dependency 'rdf-turtle'
   spec.add_runtime_dependency 'ruby-xxHash'
 end
