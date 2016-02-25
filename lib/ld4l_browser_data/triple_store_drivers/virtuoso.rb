@@ -42,7 +42,7 @@ module Ld4lBrowserData
       def template_file
         'virtuoso.ini.template'
       end
-      
+
       def process_name
         'virtuoso-t'
       end
@@ -123,9 +123,21 @@ module Ld4lBrowserData
       def sparql_query(sparql, format='application/sparql-results+json', &block)
         params = {'query' => sparql}
         headers = {'accept' => format}
-        http_post("http://localhost:#{@http_port}/sparql/", block, params, headers)
+        http_post("http://localhost:#{@http_port}/sparql/", block, params, headers) do |error|
+          put_it "SPARQL query fail 1"
+          sleep(10)
+          http_post("http://localhost:#{@http_port}/sparql/", block, params, headers) do |error|
+            put_it "SPARQL query fail 2"
+            sleep(10)
+            http_post("http://localhost:#{@http_port}/sparql/", block, params, headers)
+          end
+        end
       end
 
+      def put_it(message)
+        puts "#{Time.new.strftime('%Y-%m-%d %H:%M:%S')} #{message}"
+      end
+      
       #
       # Since Virtuoso will only ingest files from authorized directories, create a symbolic
       # link in the home directory, and ingest from there.
@@ -158,7 +170,7 @@ module Ld4lBrowserData
         if ['.rdf', '.owl'].include?(ext)
           isql("db.dba.rdf_load_rdfxml(file_to_string_output('ingest_link#{ext}'), '', '#{graph_uri}', 0, 0);")
         else
-#          isql("ttlp_mt(file_to_string_output('ingest_link#{ext}'), '', '#{graph_uri}');")
+          #          isql("ttlp_mt(file_to_string_output('ingest_link#{ext}'), '', '#{graph_uri}');")
           isql("ttlp_mt(file_to_string_output('ingest_link#{ext}'), '', '#{graph_uri}', 0, 0, 6);")
         end
       end
