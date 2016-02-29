@@ -8,7 +8,7 @@ module Kernel
 end
 
 module Ld4lBrowserData
-  # You screwed up the calling sequence.
+  # You screwed up the calling sequence in the code.
   class IllegalStateError < StandardError
   end
 
