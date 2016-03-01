@@ -23,9 +23,9 @@ module Ld4lBrowserData
           'Usage is ld4l_index_specific_uris \\',
           'source=<source_directory> \\',
           'report=<report_file>[~REPLACE] \\',
-          'IGNORE_BOOKMARK \\',
-          'CLEAR_INDEX \\',
-          'IGNORE_SITE_SURPRISES \\',
+          '[IGNORE_BOOKMARK] \\',
+          '[CLEAR_INDEX] \\',
+          '[IGNORE_SITE_SURPRISES] \\',
         ]
       end
 

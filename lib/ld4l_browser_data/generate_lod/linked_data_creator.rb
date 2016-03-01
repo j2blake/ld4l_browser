@@ -23,8 +23,8 @@ module Ld4lBrowserData
           'source=<source_file_or_directory> \\',
           'file_system=<file_system_key>[~REPLACE] \\',
           'report=<report_file>[~REPLACE] \\',
-          'IGNORE_BOOKMARK \\',
-          'IGNORE_SITE_SURPRISES \\',
+          '[IGNORE_BOOKMARK] \\',
+          '[IGNORE_SITE_SURPRISES] \\',
         ]
 
         @uri_prefix = 'http://draft.ld4l.org/'

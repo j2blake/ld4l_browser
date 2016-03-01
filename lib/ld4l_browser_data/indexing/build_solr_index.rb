@@ -62,9 +62,9 @@ module Ld4lBrowserData
         @usage_text = [
           'Usage is ld4l_build_solr_index \\',
           'report=<report_file>[~REPLACE] \\',
-          'IGNORE_BOOKMARK \\',
-          'CLEAR_INDEX \\',
-          'IGNORE_SITE_SURPRISES \\',
+          '[IGNORE_BOOKMARK] \\',
+          '[CLEAR_INDEX] \\',
+          '[IGNORE_SITE_SURPRISES] \\',
         ]
       end
 

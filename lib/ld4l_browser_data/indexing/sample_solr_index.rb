@@ -22,8 +22,8 @@ module Ld4lBrowserData
           'Usage is ld4l_sample_solr_index \\',
           'works=<number_of_works> \\',
           'report=<report_file>[~REPLACE] \\',
-          'CLEAR_INDEX \\',
-          'IGNORE_SITE_SURPRISES \\',
+          '[CLEAR_INDEX] \\',
+          '[IGNORE_SITE_SURPRISES] \\',
         ]
       end
 

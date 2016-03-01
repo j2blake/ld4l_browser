@@ -43,7 +43,7 @@ module Ld4lBrowserData
           'report=<report_file>[~REPLACE] \\',
           '[partition=<num_partitions>] \\',
           '[split_size=<num_lines>] \\',
-          'IGNORE_SITE_SURPRISES \\',
+          '[IGNORE_SITE_SURPRISES] \\',
         ]
 
         @uri_prefix = 'http://draft.ld4l.org/'
