@@ -1,0 +1,23 @@
+#! /usr/bin/env ruby
+
+=begin rdoc
+--------------------------------------------------------------------------------
+
+Start with a directory filled with files of URIs. Consider each file as an 
+indexing task. Run parallel processes to accomplish one task each, restarting 
+the triple-store as each set of processes is completed.
+
+--------------------------------------------------------------------------------
+=end
+
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'ld4l_browser_data'
+require 'ld4l_browser_data/whatever_it_takes'
+
+#
+# ---------------------------------------------------------
+# MAIN ROUTINE
+# ---------------------------------------------------------
+#
+
+Ld4lBrowserData::WhateverItTakes::Indexer.new.run

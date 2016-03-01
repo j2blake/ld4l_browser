@@ -93,8 +93,8 @@ module Ld4lBrowserData
           mark_completed_tasks
           break if all_stopped?
           send_sigint if @settings[:sigint_on_failure] && any_failed?
-          send_sigint if @interrupted
-          raise Timeout.new if elapsed_time > @settings[:timeout]
+          shut_em_down if @interrupted
+          raise Timeout.new if timed_out?
         end
       end
 
@@ -120,18 +120,32 @@ module Ld4lBrowserData
         @tasks.any? { |t| t.process.exit_code && t.process.exit_code > 0 }
       end
 
+      def timed_out?
+        @settings[:timeout] && @settings[:timeout] > 0 && elapsed_time > @settings[:timeout]
+      end
+
       def send_sigint
+        send_signals 'sigint'
+      end
+      
+      def shut_em_down
+        send_signals 'sigint'
+        sleep 4
+        send_signals '9'
+      end
+
+      def send_signals(signal)
         @tasks.each do |t|
           unless t.running_time
             begin
-              `kill -sigint #{t.process.pid}`
+              `kill -#{signal} #{t.process.pid}`
             rescue
               puts "Failed to kill #{t.inspect}"
             end
           end
         end
       end
-
+      
       def elapsed_time
         Time.now - @start_time
       end
