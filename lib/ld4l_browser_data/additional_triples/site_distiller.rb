@@ -203,6 +203,7 @@ module Ld4lBrowserData
           puts
           puts "ERROR: #{$!}"
           puts
+          exit 1
         ensure
           @report.close if @report
         end
