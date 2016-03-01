@@ -7,6 +7,7 @@ module Ld4lBrowserData
       end
 
       class Task
+        attr_accessor :name
         attr_accessor :cmd
         attr_accessor :inputs
         attr_accessor :process
@@ -24,19 +25,24 @@ module Ld4lBrowserData
       def initialize(params)
         @settings = DEFAULT_PARAMS.merge(params)
         @tasks = []
-        yield(self)
+        yield(self) if block_given?
       end
 
-      def task(*spec)
+      def task(spec)
         t = Task.new
-        if Array === spec[-1]
-          inputs = spec.delete_at(-1)
-          t.cmd = spec
-          t.inputs = inputs
-        else
-          t.cmd = spec
-        end
+        raise UserInputError.new(':cmd is required on a task: #{spec.inspect}') unless spec[:cmd]
+        t.cmd = make_array(spec[:cmd])
+        t.inputs = make_array(spec[:inputs]) if spec[:inputs]
+        t.name = spec[:name] || 'NO NAME'
         @tasks << t
+      end
+
+      def make_array(value)
+        if Array === value
+          value
+        else
+          [value]
+        end
       end
 
       def run_processes
@@ -46,7 +52,7 @@ module Ld4lBrowserData
         wait_for_processes
         assemble_results
       end
-      
+
       def interrupt
         @interrupted = true
       end
@@ -83,7 +89,8 @@ module Ld4lBrowserData
 
       def wait_for_processes
         loop do
-          wait_and_mark_completed_tasks
+          run_for_a_while
+          mark_completed_tasks
           break if all_stopped?
           send_sigint if @settings[:sigint_on_failure] && any_failed?
           send_sigint if @interrupted
@@ -91,8 +98,11 @@ module Ld4lBrowserData
         end
       end
 
-      def wait_and_mark_completed_tasks
+      def run_for_a_while
         sleep(@settings[:poll_interval])
+      end
+
+      def mark_completed_tasks
         @tasks.each do |t|
           unless t.running_time
             if t.process.exited?
@@ -105,7 +115,7 @@ module Ld4lBrowserData
       def all_stopped?
         @tasks.all? { |t| t.running_time }
       end
-      
+
       def any_failed?
         @tasks.any? { |t| t.process.exit_code && t.process.exit_code > 0 }
       end
@@ -132,6 +142,7 @@ module Ld4lBrowserData
 
       def assemble_process_info(t)
         {
+          :name => t.name,
           :cmd => t.cmd,
           :pid => t.process.pid,
           :exit_code => t.process.exit_code,
