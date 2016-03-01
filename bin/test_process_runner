@@ -10,7 +10,7 @@ Call a hard-coded main routine to test the ParallelProcessRunner class.
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'ld4l_browser_data'
-require 'ld4l_browser_data/by_hook_or_by_crook'
+require 'ld4l_browser_data/whatever_it_takes'
 
 #
 # ---------------------------------------------------------
@@ -18,4 +18,4 @@ require 'ld4l_browser_data/by_hook_or_by_crook'
 # ---------------------------------------------------------
 #
 
-Ld4lBrowserData::ByHookOrByCrook::TestParallelProcessRunner.new.run
+Ld4lBrowserData::WhateverItTakes::TestParallelProcessRunner.new.run

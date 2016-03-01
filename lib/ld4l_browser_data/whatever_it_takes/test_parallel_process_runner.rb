@@ -1,5 +1,5 @@
 module Ld4lBrowserData
-  module ByHookOrByCrook
+  module WhateverItTakes
     class TestParallelProcessRunner
       def run
         pm = ParallelProcessRunner.new(timeout: 1000, poll_interval: 1, inherit_output: true, sigint_on_failure: false) do |pm|

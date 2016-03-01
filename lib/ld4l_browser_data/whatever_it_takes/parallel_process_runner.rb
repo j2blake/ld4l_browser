@@ -1,7 +1,7 @@
 require 'childprocess'
 
 module Ld4lBrowserData
-  module ByHookOrByCrook
+  module WhateverItTakes
     class ParallelProcessRunner
       class Timeout < IllegalStateError
       end
