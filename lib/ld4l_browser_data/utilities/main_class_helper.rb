@@ -1,5 +1,7 @@
 require 'fileutils'
 
+require_relative 'main_class_helper/source_files'
+
 module Ld4lBrowserData
   module Utilities
     module MainClassHelper

@@ -1,6 +1,6 @@
 module Ld4lBrowserData
-  module GenerateLod
-    class LinkedDataCreator
+  module Utilities
+    module MainClassHelper
       class SourceFiles
         def initialize(path)
           raise IllegalStateError.new("#{path} doesn't exist.") unless File.exist?(path)

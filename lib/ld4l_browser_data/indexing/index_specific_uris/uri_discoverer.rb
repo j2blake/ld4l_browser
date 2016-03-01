@@ -27,11 +27,11 @@ module Ld4lBrowserData
         TYPE_INSTANCE = 'http://bib.ld4l.org/ontology/Instance'
         TYPE_PERSON = 'http://xmlns.com/foaf/0.1/Person'
         TYPE_ORGANIZATION = 'http://xmlns.com/foaf/0.1/Organization'
-        def initialize(bookmark, ts, report, source_dir)
+        def initialize(bookmark, ts, report, source_files)
           @bookmark = bookmark
           @ts = ts
           @report = report
-          @source_dir = source_dir
+          @source_files = source_files
           @skipping_files = true
           @skipping_lines = true
 
@@ -43,28 +43,26 @@ module Ld4lBrowserData
             @report.nothing_to_do
             return
           end
-          Dir.chdir(@source_dir) do |d|
-            Dir.entries(d).sort.each do |fn|
-              next if skip_files(fn)
-              next if invalid_file(fn)
-              @report.next_file(fn)
+          @source_files.each do |fn|
+            next if skip_files(fn)
+            next if invalid_file(fn)
+            @report.next_file(fn)
 
-              f = File.new(fn)
-              f.each do |line|
-                next if skip_lines(f)
-                uri = figure_uri(line)
-                type = find_type(uri)
+            f = File.new(fn)
+            f.each do |line|
+              next if skip_lines(f)
+              uri = figure_uri(line)
+              type = find_type(uri)
 
-                if type
-                  yield type, uri
-                else
-                  @report.logit("couldn't find a type for '#{uri}'")
-                end
-
-                @report.record_uri(uri, f.lineno, fn)
-                @bookmark.update(fn, f.lineno) if 0 == (f.lineno % 100)
-                @report.progress(fn, f.lineno) if 0 == (f.lineno % 1000)
+              if type
+                yield type, uri
+              else
+                @report.logit("couldn't find a type for '#{uri}'")
               end
+
+              @report.record_uri(uri, f.lineno, fn)
+              @bookmark.update(fn, f.lineno) if 0 == (f.lineno % 100)
+              @report.progress(fn, f.lineno) if 0 == (f.lineno % 1000)
             end
           end
           @bookmark.complete

@@ -21,7 +21,7 @@ module Ld4lBrowserData
       def initialize
         @usage_text = [
           'Usage is ld4l_index_specific_uris \\',
-          'source=<source_directory> \\',
+          'source=<source_file_or_directory> \\',
           'report=<report_file>[~REPLACE] \\',
           '[IGNORE_BOOKMARK] \\',
           '[CLEAR_INDEX] \\',
@@ -31,7 +31,7 @@ module Ld4lBrowserData
 
       def process_arguments()
         parse_arguments(:source, :report, :IGNORE_BOOKMARK, :CLEAR_INDEX, :IGNORE_SITE_SURPRISES)
-        @source_dir = validate_input_directory(:source, "source_directory")
+        @source_files = SourceFiles.new(validate_input_source(:source, "source_file_or_directory"))
         @report = Report.new(validate_output_file(:report, "report file"))
         @ignore_bookmark = @args[:IGNORE_BOOKMARK]
         @ignore_surprises = @args[:IGNORE_SITE_SURPRISES]
@@ -43,7 +43,7 @@ module Ld4lBrowserData
         check_site_consistency(@ignore_surprises, {
           'Triple store' => @ts,
           'Report path' => @report,
-          'Source directory' => @source_dir
+          'Source file or directory' => @source_files,
         })
       end
 
@@ -52,7 +52,7 @@ module Ld4lBrowserData
       end
 
       def do_it
-        uris = UriDiscoverer.new(@bookmark, @ts, @report, @source_dir)
+        uris = UriDiscoverer.new(@bookmark, @ts, @report, @source_files)
         uris.each do |type, uri|
           if @interrupted
             process_interruption
@@ -71,7 +71,7 @@ module Ld4lBrowserData
       end
 
       def initialize_bookmark
-        @bookmark = Bookmark.new(File.basename(@source_dir), @ss, @ignore_bookmark)
+        @bookmark = Bookmark.new(@source_files.basename, @ss, @ignore_bookmark)
       end
 
       def trap_control_c
@@ -105,6 +105,7 @@ module Ld4lBrowserData
           puts
           puts "ERROR: #{$!}"
           puts
+          exit 1
         ensure
           @report.close if @report
         end

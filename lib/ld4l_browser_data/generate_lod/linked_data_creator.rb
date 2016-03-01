@@ -9,7 +9,6 @@ triples, and serialize it to the requested format.
 --------------------------------------------------------------------------------
 =end
 require_relative 'linked_data_creator/report'
-require_relative 'linked_data_creator/source_files'
 
 module Ld4lBrowserData
   module GenerateLod
