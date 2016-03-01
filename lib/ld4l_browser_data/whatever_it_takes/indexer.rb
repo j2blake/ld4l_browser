@@ -7,6 +7,8 @@ the triple-store as each set of processes is completed.
 
 --------------------------------------------------------------------------------
 =end
+require 'fileutils'
+
 require_relative 'indexer/report'
 
 module Ld4lBrowserData
@@ -111,8 +113,6 @@ module Ld4lBrowserData
       end
 
       def cycle_triple_store
-        bogus "cycle_triple_store DISABLED"
-        return
         @report.logit `ts_down`
         @report.logit `ts_up`
       end
@@ -126,7 +126,7 @@ module Ld4lBrowserData
 
       def get_next_chunks
         max = @how_many - @chunks_completed
-        source_files(@source_dir)[0, max]
+        source_files(@source_dir)[0, max][0, @process_count]
       end
 
       def task_for_chunk(fn)
@@ -145,7 +145,7 @@ module Ld4lBrowserData
           name, exit_code, running_time = row.values_at(:name, :exit_code, :running_time)
           if exit_code == 0
             @report.logit("#{name} completed successfully -- running time: #{running_time}.")
-            `mv #{File.join(@source_dir, name)} @completed_dir`
+            FileUtils.mv(File.join(@source_dir, name), @completed_dir)
             @chunks_completed += 1
           else
             @report.logit("#{name} failed -- exit code: #{exit_code}, running time: #{running_time}")

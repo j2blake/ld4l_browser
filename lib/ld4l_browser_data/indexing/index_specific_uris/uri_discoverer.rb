@@ -43,12 +43,12 @@ module Ld4lBrowserData
             @report.nothing_to_do
             return
           end
-          @source_files.each do |fn|
+          @source_files.each do |f|
+            fn = File.basename(f.path)
             next if skip_files(fn)
             next if invalid_file(fn)
             @report.next_file(fn)
 
-            f = File.new(fn)
             f.each do |line|
               next if skip_lines(f)
               uri = figure_uri(line)
