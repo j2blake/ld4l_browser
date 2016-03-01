@@ -30,6 +30,7 @@ module Ld4lBrowserData
 
         @chunks_completed = 0
         @interrupted = false
+        @failed = false
         @start_time = Time.now
       end
 
@@ -98,7 +99,7 @@ module Ld4lBrowserData
           false
         elsif @chunks_completed >= @how_many
           false
-        elsif @interrupted
+        elsif @interrupted || @failed
           false
         else
           true
@@ -133,7 +134,7 @@ module Ld4lBrowserData
         report_file = File.join(@reports_dir, fn)
         t = {
           name: fn,
-          cmd: %W(ld4l_index_specific_uris source=#{source_file} report=#{report_file})
+          cmd: %W(ld4l_index_specific_uris source=#{source_file} report=#{report_file}~REPLACE)
         }
         @report.logit "Submitting task: #{t}"
         t
@@ -145,8 +146,10 @@ module Ld4lBrowserData
           if exit_code == 0
             @report.logit("#{name} completed successfully -- running time: #{running_time}.")
             `mv #{File.join(@source_dir, name)} @completed_dir`
+            @chunks_completed += 1
           else
             @report.logit("#{name} failed -- exit code: #{exit_code}, running time: #{running_time}")
+            @failed = true
           end
         end
       end
