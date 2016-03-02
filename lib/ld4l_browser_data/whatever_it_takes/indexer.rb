@@ -119,7 +119,7 @@ module Ld4lBrowserData
 
       def create_process_runner
         remaining_time = @timeout - (Time.now - @start_time)
-        options = {poll_interval: 1, sigint_on_failure: true, timeout: remaining_time.to_i}
+        options = {poll_interval: 1, sigint_on_failure: true, timeout: remaining_time.to_i, inherit_output: @show_all_output}
         @report.logit("Starting ParallelProcessRunner: #{options.inspect}")
         @runner = ParallelProcessRunner.new(options)
       end
