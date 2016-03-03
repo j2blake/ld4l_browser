@@ -117,7 +117,13 @@ module Ld4lBrowserData
       end
 
       def any_failed?
-        @tasks.any? { |t| t.process.exit_code && t.process.exit_code > 0 }
+         failure = @tasks.find{ |t| t.process.exit_code && t.process.exit_code > 0 }
+           if failure
+             @report.logit("#{t.name} FAILED. Exit code: #{t.process.exit_code}")
+             true
+           else
+             false
+           end
       end
 
       def timed_out?
