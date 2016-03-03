@@ -3,7 +3,9 @@
 =begin rdoc
 --------------------------------------------------------------------------------
 
-Call a hard-coded main routine to test the ParallelProcessRunner class.
+Start with a directory filled with files of URIs. Consider each file as an 
+generating task. Run parallel processes to accomplish one task each, restarting 
+the triple-store as each set of processes is completed.
 
 --------------------------------------------------------------------------------
 =end
@@ -18,4 +20,4 @@ require 'ld4l_browser_data/whatever_it_takes'
 # ---------------------------------------------------------
 #
 
-Ld4lBrowserData::WhateverItTakes::TestParallelProcessRunner.new.run
+Ld4lBrowserData::WhateverItTakes::Generator.new.run
