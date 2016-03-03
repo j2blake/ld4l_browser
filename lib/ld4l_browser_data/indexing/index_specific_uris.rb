@@ -8,6 +8,8 @@ Specify a directory that holds lists of uris, and a place to put the report.
 
 --------------------------------------------------------------------------------
 =end
+require "ld4l_browser_data/utilities/uri_processor_helper"
+
 require_relative 'index_specific_uris/bookmark'
 require_relative 'index_specific_uris/report'
 require_relative 'index_specific_uris/uri_discoverer'
@@ -18,6 +20,7 @@ module Ld4lBrowserData
       include Utilities::MainClassHelper
       include Utilities::TripleStoreUser
       include Utilities::SolrServerUser
+      include Utilities::UriProcessorHelper
       def initialize
         @usage_text = [
           'Usage is ld4l_index_specific_uris \\',
@@ -61,10 +64,13 @@ module Ld4lBrowserData
             begin
               doc = @doc_factory.document(type, uri)
               @ss.add_document(doc.document) if doc
+              error_monitor.good
             rescue DocumentError
               @report.log_document_error(type, uri, $!.doc, $!.cause)
+              error_monitor.failed
             rescue
               @report.log_document_error(type, uri, doc, $!)
+              error_monitor.failed
             end
           end
         end
