@@ -71,7 +71,7 @@ module Ld4lBrowserData
         trap("SIGINT") do
           @interrupted = true
           @report.logit "INTERRUPTED" if @report
-          @process_runner.interrupt if @process_runner
+          @runner.interrupt if @runner
         end
       end
 
