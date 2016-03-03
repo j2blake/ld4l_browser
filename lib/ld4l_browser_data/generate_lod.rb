@@ -14,7 +14,6 @@ require_relative "generate_lod/file_system"
 require_relative "generate_lod/linked_data_creator"
 require_relative "generate_lod/list_uris"
 require_relative "generate_lod/uri_discoverer"
-require_relative "generate_lod/uri_processor"
 
 def pattern_escape(string)
   string.gsub('/', '\\/').gsub('.', '\\.')

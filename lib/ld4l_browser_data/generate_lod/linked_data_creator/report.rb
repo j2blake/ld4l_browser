@@ -155,7 +155,7 @@ module Ld4lBrowserData
           @current_line_number = line_number
         end
 
-        def wrote_it(uri, graph, content)
+        def good_uri(uri, graph, content)
           @uri_counter.another_good
           @graph_counter.add(uri, graph)
           @content_counter.add(uri, content)
@@ -167,7 +167,7 @@ module Ld4lBrowserData
           announce_progress
         end
 
-        def uri_failed(uri, e)
+        def failed_uri(uri, e)
           @uri_counter.another_failed
           logit("URI failed: '#{uri}' #{e}")
           announce_progress
