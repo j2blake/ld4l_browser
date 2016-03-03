@@ -53,7 +53,7 @@ module Ld4lBrowserData
         parse_arguments(*@valid_args)
 
         @source_dir = validate_input_directory(:source, "source_directory")
-        @process_count = validate_integer(key: :process_count, label: 'number of simultaneous processes', min: 1, max: 20)
+        @process_count = validate_integer(key: :process_count, label: 'number of simultaneous processes', min: 1, max: 40)
         @how_many = validate_integer(key: :how_many, label: 'maximum number of chunks', min: 1, default: '10000')
         @timeout = validate_integer(key: :timeout, label: 'maximum seconds to run', default: '0')
         @restart = @args[:RESTART]
