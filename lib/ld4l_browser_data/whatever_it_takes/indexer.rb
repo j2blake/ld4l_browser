@@ -24,8 +24,21 @@ module Ld4lBrowserData
           '[how_many=<maximum_number_of_chunks>] \\',
           '[timeout=<maximum_seconds>] \\',
           '[RESTART] \\',
+          '[IGNORE_BOOKMARKS] \\',
           '[IGNORE_SITE_SURPRISES] \\',
           '[SHOW_ALL_OUTPUT] \\',
+        ]
+
+        @valid_args = [
+          :source,
+          :report_dir,
+          :process_count,
+          :how_many,
+          :timeout,
+          :RESTART,
+          :IGNORE_BOOKMARKS,
+          :IGNORE_SITE_SURPRISES,
+          :SHOW_ALL_OUTPUT
         ]
 
         @uri_prefix = 'http://draft.ld4l.org/'
@@ -37,13 +50,14 @@ module Ld4lBrowserData
       end
 
       def process_arguments()
-        parse_arguments(:source, :report_dir, :process_count, :how_many, :timeout, :RESTART, :IGNORE_SITE_SURPRISES, :SHOW_ALL_OUTPUT)
+        parse_arguments(*@valid_args)
 
         @source_dir = validate_input_directory(:source, "source_directory")
         @process_count = validate_integer(key: :process_count, label: 'number of simultaneous processes', min: 1, max: 20)
         @how_many = validate_integer(key: :how_many, label: 'maximum number of chunks', min: 1, default: '10000')
         @timeout = validate_integer(key: :timeout, label: 'maximum seconds to run', default: '0')
         @restart = @args[:RESTART]
+        @ignore_bookmarks = @args[:IGNORE_BOOKMARKS]
         @ignore_surprises = @args[:IGNORE_SITE_SURPRISES]
         @show_all_output = @args[:SHOW_ALL_OUTPUT]
 
@@ -125,7 +139,12 @@ module Ld4lBrowserData
 
       def create_process_runner
         remaining_time = @timeout - (Time.now - @start_time)
-        options = {poll_interval: 1, sigint_on_failure: true, timeout: remaining_time.to_i, inherit_output: @show_all_output}
+        options = {
+          poll_interval: 1,
+          sigint_on_failure: true,
+          timeout: remaining_time.to_i,
+          inherit_output: @show_all_output
+        }
         @report.logit("Starting ParallelProcessRunner: #{options.inspect}")
         @runner = ParallelProcessRunner.new(options)
       end
@@ -138,9 +157,11 @@ module Ld4lBrowserData
       def task_for_chunk(fn)
         source_file = File.join(@source_dir, fn)
         report_file = File.join(@reports_dir, fn)
+        cmd = %W(ld4l_index_specific_uris source=#{source_file} report=#{report_file}~REPLACE)
+        cmd << "IGNORE_BOOKMARK" if @ignore_bookmarks 
         t = {
           name: fn,
-          cmd: %W(ld4l_index_specific_uris source=#{source_file} report=#{report_file}~REPLACE)
+          cmd:  cmd
         }
         @report.logit "Submitting task: #{t}"
         t
@@ -178,3 +199,5 @@ module Ld4lBrowserData
     end
   end
 end
+
+''
