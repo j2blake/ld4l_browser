@@ -40,8 +40,6 @@ module Ld4lBrowserData
         parse_arguments(:source, :report_dir, :process_count, :how_many, :timeout, :RESTART, :IGNORE_SITE_SURPRISES, :SHOW_ALL_OUTPUT)
 
         @source_dir = validate_input_directory(:source, "source_directory")
-        @reports_dir = validate_output_directory(:report_dir, "reports directory")
-        @report = Report.new('wit_indexer', File.join(@reports_dir, '_indexer'))
         @process_count = validate_integer(key: :process_count, label: 'number of simultaneous processes', min: 1, max: 20)
         @how_many = validate_integer(key: :how_many, label: 'maximum number of chunks', min: 1, default: '10000')
         @timeout = validate_integer(key: :timeout, label: 'maximum seconds to run', default: '0')
@@ -49,7 +47,15 @@ module Ld4lBrowserData
         @ignore_surprises = @args[:IGNORE_SITE_SURPRISES]
         @show_all_output = @args[:SHOW_ALL_OUTPUT]
 
+        @reports_dir = validate_output_directory(:report_dir, "reports directory")
+        prepare_reports_directory
+        @report = Report.new('wit_indexer', File.join(@reports_dir, '_indexer'))
         @report.log_header
+      end
+
+      def prepare_reports_directory
+        FileUtils.rm_r(@reports_dir) if Dir.exist?(@reports_dir)
+        Dir.mkdir(@reports_dir)
       end
 
       def check_for_surprises
