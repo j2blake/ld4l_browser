@@ -26,6 +26,7 @@ Each file system class must satisfy these calls:
 
 require_relative 'file_systems/mock_fs'
 require_relative 'file_systems/mysql_fs'
+require_relative 'file_systems/mysql_zip_fs'
 require_relative 'file_systems/zip_fs'
 
 module Ld4lBrowserData

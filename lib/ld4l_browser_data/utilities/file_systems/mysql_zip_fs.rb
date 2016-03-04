@@ -1,9 +1,10 @@
 require 'mysql2'
+require 'zlib'
 
 module Ld4lBrowserData
   module Utilities
     module FileSystems
-      class MySqlFS
+      class MySqlZipFS
         DEFAULT_PARAMS = {
           :host => 'localhost',
           :username => 'SUPPLY_USERNAME',
@@ -40,7 +41,8 @@ module Ld4lBrowserData
 
         def write(uri, contents)
           bogus("Size of RDF is %d for %s" % [contents.size, uri]) if contents.size >= 2**16
-          insert(uri, contents)
+          zipped = Zlib.deflate(contents)
+          insert(uri, zipped)
         end
 
         def set_void(filename, contents)
