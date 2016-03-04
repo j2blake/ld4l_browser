@@ -22,10 +22,6 @@ module Ld4lBrowserData
           bogus "write(#{uri}}"
         end
 
-        def set_void(filename, contents)
-          bogus "set_void(#{filename})"
-        end
-
         def close
           bogus "close"
         end

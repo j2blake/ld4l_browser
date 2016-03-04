@@ -85,7 +85,11 @@ module Ld4lBrowserData
         void_dir = File.expand_path('../void',__FILE__)
         Dir.chdir(void_dir) do |dir|
           Dir.foreach('.') do |filename|
-            @files.set_void(filename, File.read(filename)) if filename.start_with? 'void'
+            if filename.start_with?('void_') && filename.end_with?('.ttl')
+            uri = @uri_prefix + filename[5..-5]
+            content = File.read(filename)
+            @files.write(uri, content)
+          end
           end
         end
       end

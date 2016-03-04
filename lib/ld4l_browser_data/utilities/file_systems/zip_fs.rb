@@ -66,10 +66,6 @@ module Ld4lBrowserData
           end
         end
 
-        def set_void(filename, contents)
-          bogus "set_void(#{filename})"
-        end
-
         def hash_it(name)
           hash = Zlib.crc32(name).to_s(16)
           [hash[-4, 2], hash[-2, 2]]

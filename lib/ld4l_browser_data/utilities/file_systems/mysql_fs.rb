@@ -43,10 +43,6 @@ module Ld4lBrowserData
           insert(uri, contents)
         end
 
-        def set_void(filename, contents)
-          bogus "set_void(#{filename})"
-        end
-
         def insert(uri, rdf)
           begin
             @insert_statement.execute(uri, rdf)
