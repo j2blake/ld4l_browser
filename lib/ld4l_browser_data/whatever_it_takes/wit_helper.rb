@@ -109,8 +109,7 @@ module Ld4lBrowserData
           timeout: remaining_time.to_i,
           inherit_output: @show_all_output
         }
-        @report.logit("Starting ParallelProcessRunner: #{options.inspect}")
-        @runner = ParallelProcessRunner.new(options)
+        @runner = ParallelProcessRunner.new(options, @report)
       end
 
       def get_next_chunks

@@ -22,10 +22,14 @@ module Ld4lBrowserData
         sigint_on_failure: false,
       }
 
-      def initialize(params)
+      def initialize(params, report)
         @settings = DEFAULT_PARAMS.merge(params)
+        @report = report
         @tasks = []
+
         yield(self) if block_given?
+
+        @report.logit("Created ParallelProcessRunner: #{params.inspect}")
       end
 
       def task(spec)
@@ -74,6 +78,7 @@ module Ld4lBrowserData
       def start_processes
         @tasks.each do |t|
           start_process(t.process, t.inputs)
+          @report.logit "Task '#{t.name}' started."
         end
       end
 
@@ -107,6 +112,7 @@ module Ld4lBrowserData
           unless t.running_time
             if t.process.exited?
               t.running_time = elapsed_time
+              @report.logit "Task '#{t.name}' exited, with code #{t.process.exit_code}."
             end
           end
         end
@@ -117,13 +123,13 @@ module Ld4lBrowserData
       end
 
       def any_failed?
-         failure = @tasks.find{ |t| t.process.exit_code && t.process.exit_code > 0 }
-           if failure
-             @report.logit("#{failure.name} FAILED. Exit code: #{failure.process.exit_code}")
-             true
-           else
-             false
-           end
+        failure = @tasks.find{ |t| t.process.exit_code && t.process.exit_code > 0 }
+        if failure
+          @report.logit("#{failure.name} FAILED. Exit code: #{failure.process.exit_code}")
+          true
+        else
+          false
+        end
       end
 
       def timed_out?
@@ -133,7 +139,7 @@ module Ld4lBrowserData
       def send_sigint
         send_signals 'sigint'
       end
-      
+
       def shut_em_down
         send_signals 'sigint'
         sleep 4
@@ -151,7 +157,7 @@ module Ld4lBrowserData
           end
         end
       end
-      
+
       def elapsed_time
         Time.now - @start_time
       end
