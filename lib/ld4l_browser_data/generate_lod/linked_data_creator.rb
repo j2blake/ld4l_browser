@@ -108,7 +108,6 @@ module Ld4lBrowserData
           place_void_files
           report
           exit 1 if @interrupted
-          end
         rescue UserInputError, IllegalStateError, SettingsError
           puts
           puts "ERROR: #{$!}"
