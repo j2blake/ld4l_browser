@@ -8,7 +8,6 @@ the triple-store as each set of processes is completed.
 --------------------------------------------------------------------------------
 =end
 require_relative 'wit_helper'
-require_relative 'indexer/report'
 
 module Ld4lBrowserData
   module WhateverItTakes
@@ -57,7 +56,7 @@ module Ld4lBrowserData
           name: fn,
           cmd:  cmd
         }
-        @report.logit "Submitting task: #{t}"
+        @report.submitting_task(t)
         t
       end
 

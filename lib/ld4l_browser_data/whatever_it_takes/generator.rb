@@ -10,7 +10,6 @@ the triple-store as each set of processes is completed.
 require "ld4l_browser_data/utilities/file_system_user"
 
 require_relative 'wit_helper'
-require_relative 'generator/report'
 
 module Ld4lBrowserData
   module WhateverItTakes
@@ -68,7 +67,7 @@ module Ld4lBrowserData
           name: fn,
           cmd:  cmd
         }
-        @report.logit "Submitting task: #{t}"
+        @report.submitting_task(t)
         t
       end
     end

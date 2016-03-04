@@ -1,4 +1,5 @@
 require 'fileutils'
+require_relative 'report'
 
 module Ld4lBrowserData
   module WhateverItTakes
@@ -48,7 +49,11 @@ module Ld4lBrowserData
         @interrupted = false
         trap("SIGINT") do
           @interrupted = true
-          @report.logit "INTERRUPTED" if @report
+          if @report
+            @report.interrupted
+          else
+            puts "INTERRUPTED"
+          end
           @runner.interrupt if @runner
         end
       end
@@ -76,7 +81,7 @@ module Ld4lBrowserData
           files.each do |fn|
             `mv #{fn} ..`
           end
-          @report.logit "Restored #{files.size} files."
+          @report.restored_files(files.size)
         end
       end
 
@@ -125,11 +130,11 @@ module Ld4lBrowserData
         @results.each do |row|
           name, exit_code, running_time = row.values_at(:name, :exit_code, :running_time)
           if exit_code == 0
-            @report.logit("#{name} completed successfully -- running time: #{running_time}.")
+            @report.chunk_completed(name, running_time)
             FileUtils.mv(File.join(@source_dir, name), @completed_dir)
             @chunks_completed += 1
           else
-            @report.logit("#{name} failed -- exit code: #{exit_code}, running time: #{running_time}")
+            @report.chunk_failed(name, running_time, exit_code)
             @failed = true
           end
         end
@@ -141,6 +146,7 @@ module Ld4lBrowserData
           check_for_surprises
           trap_control_c
           do_rounds
+          exit 1 if @interrupted
         rescue UserInputError, IllegalStateError
           puts
           puts "ERROR: #{$!}"
