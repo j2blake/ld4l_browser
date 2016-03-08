@@ -38,6 +38,27 @@ module Ld4lBrowserData
           true
         end
 
+        def exist?(uri)
+          true && @read_statement.execute(uri).first
+        end
+
+        def exists?(uri)
+          exist?(uri)
+        end
+
+        def read(uri)
+          select(uri)
+        end
+
+        def select(uri)
+          row = @read_statement.execute(uri).first
+          if row
+            row['rdf']
+          else
+            nil
+          end
+        end
+
         def write(uri, contents)
           bogus("Size of RDF is %d for %s" % [contents.size, uri]) if contents.size >= 2**16
           insert(uri, contents)
