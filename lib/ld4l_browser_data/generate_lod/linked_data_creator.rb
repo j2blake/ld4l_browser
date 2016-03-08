@@ -10,6 +10,10 @@ triples, and serialize it to the requested format.
 =end
 require_relative 'linked_data_creator/report'
 require_relative 'linked_data_creator/uri_processor'
+require_relative "linked_data_creator/bookmark"
+require_relative "linked_data_creator/counts"
+require_relative "linked_data_creator/uri_discoverer"
+
 
 module Ld4lBrowserData
   module GenerateLod

@@ -7,16 +7,16 @@ stats, and writing an N3 file.
 --------------------------------------------------------------------------------
 =end
 require "ruby-xxhash"
-
 require "ld4l_browser_data/utilities/uri_processor_helper"
 
 module Ld4lBrowserData
   module GenerateLod
-    class UriProcessor
-      include Utilities::UriProcessorHelper
-      include Utilities::TripleStoreUser
+    class LinkedDataCreator
+      class UriProcessor
+        include Utilities::UriProcessorHelper
+        include Utilities::TripleStoreUser
 
-      QUERY_OUTGOING = <<-END
+        QUERY_OUTGOING = <<-END
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
         CONSTRUCT {
@@ -39,9 +39,9 @@ module Ld4lBrowserData
             }
           } 
         }
-      END
+        END
 
-      QUERY_INCOMING = <<-END
+        QUERY_INCOMING = <<-END
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
         CONSTRUCT {
@@ -64,43 +64,44 @@ module Ld4lBrowserData
             }
           } 
         }
-      END
-      #
-      def initialize(ts, files, report, uri)
-        @ts = ts
-        @files = files
-        @report = report
-        @uri = uri
-        @digest = Digest::XXHash.new(64)
-      end
-
-      def build_the_graph
-        @graph = RDF::Graph.new
-        @graph << QueryRunner.new(QUERY_OUTGOING).bind_graph('g', @uri).bind_uri('uri', @uri).construct(@ts)
-        @graph << QueryRunner.new(QUERY_INCOMING).bind_graph('g', @uri).bind_uri('uri', @uri).construct(@ts)
-      end
-
-      def write_it_out
-        @content = RDF::Writer.for(file_extension: "ttl").buffer do |writer|
-          writer << @graph
+        END
+        #
+        def initialize(ts, files, report, uri)
+          @ts = ts
+          @files = files
+          @report = report
+          @uri = uri
+          @digest = Digest::XXHash.new(64)
         end
-        @files.write(@uri, @content)
-      end
 
-      def run()
-        begin
-          if (@files.acceptable?(@uri))
-            build_the_graph
-            write_it_out
-            @report.good_uri(@uri, @graph, @content)
-            error_monitor.good
-          else
-            @report.bad_uri(@uri)
-            error_monitor.bad
+        def build_the_graph
+          @graph = RDF::Graph.new
+          @graph << QueryRunner.new(QUERY_OUTGOING).bind_graph('g', @uri).bind_uri('uri', @uri).construct(@ts)
+          @graph << QueryRunner.new(QUERY_INCOMING).bind_graph('g', @uri).bind_uri('uri', @uri).construct(@ts)
+        end
+
+        def write_it_out
+          @content = RDF::Writer.for(file_extension: "ttl").buffer do |writer|
+            writer << @graph
           end
-        rescue
-          @report.failed_uri(@uri, $!)
-          error_monitor.failed
+          @files.write(@uri, @content)
+        end
+
+        def run()
+          begin
+            if (@files.acceptable?(@uri))
+              build_the_graph
+              write_it_out
+              @report.good_uri(@uri, @graph, @content)
+              error_monitor.good
+            else
+              @report.bad_uri(@uri)
+              error_monitor.bad
+            end
+          rescue
+            @report.failed_uri(@uri, $!)
+            error_monitor.failed
+          end
         end
       end
     end
