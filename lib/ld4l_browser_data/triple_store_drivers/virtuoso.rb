@@ -21,7 +21,10 @@ module Ld4lBrowserData
         :seconds_to_startup => 60,
         :vdb_timeout => 50000,
         :username => 'dba',
-        :password => 'dba'}
+        :password => 'dba',
+        :max_connections => 30,
+        :ingest_source_dir => '', # if used must be comma-separated list, beginning with a comma.
+      }
 
       def initialize(params)
         @settings = DEFAULT_PARAMS.merge(params)
@@ -137,7 +140,7 @@ module Ld4lBrowserData
       def put_it(message)
         puts "#{Time.new.strftime('%Y-%m-%d %H:%M:%S')} #{message}"
       end
-      
+
       #
       # Since Virtuoso will only ingest files from authorized directories, create a symbolic
       # link in the home directory, and ingest from there.

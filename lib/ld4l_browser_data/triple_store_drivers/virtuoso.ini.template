@@ -55,7 +55,7 @@ DisableTcpSocket		= 0
 ;X509ClientVerify		= 0
 ;X509ClientVerifyDepth		= 0
 ;X509ClientVerifyCAFile		= ca.pem
-MaxClientConnections		= 10
+MaxClientConnections		= <%= max_connections %>
 CheckpointInterval		= 60
 O_DIRECT			= 0
 CaseMode			= 2
@@ -63,26 +63,25 @@ MaxStaticCursorRows		= 5000
 CheckpointAuditTrail		= 0
 AllowOSCalls			= 0
 SchedulerInterval		= 10
-DirsAllowed			= ., /usr/local/virtuoso-opensource/share/virtuoso/vad
+DirsAllowed			= ., /usr/local/virtuoso-opensource/share/virtuoso/vad <%= ingest_source_dir %>
 ThreadCleanupInterval		= 0
-ThreadThreshold			= 10
+ThreadThreshold			= <%= max_connections %>
 ResourcesCleanupInterval	= 0
 FreeTextBatchSize		= 100000
 SingleCPU			= 0
 VADInstallDir			= /usr/local/virtuoso-opensource/share/virtuoso/vad/
 PrefixResultNames               = 0
 RdfFreeTextRulesSize		= 100
-IndexTreeMaps			= 256
+IndexTreeMaps			= 1024
 MaxMemPoolSize                  = 200000000
 PrefixResultNames               = 0
 MacSpotlight                    = 0
-IndexTreeMaps                   = 64
 MaxQueryMem 		 	= 2G		; memory allocated to query processor
 VectorSize 		 	= 1000		; initial parallel query vector (array of query operations) size
 MaxVectorSize 		 	= 1000000	; query vector size threshold.
 AdjustVectorSize 	 	= 0
 ThreadsPerQuery 	 	= 4
-AsyncQueueMaxThreads 	 	= 10
+AsyncQueueMaxThreads 	 	= <%= max_connections %>
 ;;
 ;; When running with large data sets, one should configure the Virtuoso
 ;; process to use between 2/3 to 3/5 of free system memory and to stripe
@@ -118,18 +117,18 @@ MaxDirtyBuffers          = <%= max_dirty_buffers %>
 
 
 [HTTPServer]
-ServerPort			= <%= http_port %>
-ServerRoot			= /usr/local/virtuoso-opensource/var/lib/virtuoso/vsp
-MaxClientConnections		= 10
-DavRoot				= DAV
+ServerPort  			= <%= http_port %>
+ServerRoot  			= /usr/local/virtuoso-opensource/var/lib/virtuoso/vsp
+MaxClientConnections	= <%= max_connections %>
+DavRoot 				= DAV
 EnabledDavVSP			= 0
 HTTPProxyEnabled		= 0
 TempASPXDir			= 0
 DefaultMailServer		= localhost:25
-ServerThreads			= 10
-MaxKeepAlives			= 10
+ServerThreads			= <%= max_connections %>
+MaxKeepAlives			= 1
 KeepAliveTimeout		= 10
-MaxCachedProxyConnections	= 10
+MaxCachedProxyConnections	= <%= max_connections %>
 ProxyConnectionCacheTimeout	= 15
 HTTPThreadSize			= 280000
 HttpPrintWarningsInOutput	= 0
