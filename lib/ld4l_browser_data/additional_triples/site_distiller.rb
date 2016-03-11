@@ -32,8 +32,7 @@ module Ld4lBrowserData
         @concordance = validate_input_file(:concordance, "concordance file")
         @report = Report.new('ld4l_distill_site', validate_output_file(:report, "report file"))
 
-        @bf_instance = in_source_dir('bfInstance.nt')
-        @new_assertions = in_source_dir('newAssertions.nt')
+        @source_files = find_source_file_paths(/\.nt$/)
         @work_to_instance = in_target_dir('work_to_instance.txt')
         @instance_to_worldcat = in_target_dir('instance_to_worldcat.txt')
         @instance_to_identifiers = in_target_dir('instance_to_identifier.txt')
@@ -53,11 +52,13 @@ module Ld4lBrowserData
         pattern = /http:\/\/bib\.ld4l\.org\/ontology\/isInstanceOf/
         count = 0
         File.open(@work_to_instance, 'w') do |out|
-          File.foreach(@bf_instance) do |line|
-            if pattern =~ line
-              fields = line.split
-              out.puts(strip_angles(fields[2]) + ' ' + strip_angles(fields[0]))
-              count += 1
+          @source_files.each do |path|
+            File.foreach(path) do |line|
+              if pattern =~ line
+                fields = line.split
+                out.puts(strip_angles(fields[2]) + ' ' + strip_angles(fields[0]))
+                count += 1
+              end
             end
           end
         end
@@ -69,11 +70,13 @@ module Ld4lBrowserData
         pattern = /http:\/\/www\.w3\.org\/2002\/07\/owl#sameAs.*http:\/\/www\.worldcat\.org\/oclc/
         count = 0
         File.open(@instance_to_worldcat, 'w') do |out|
-          File.foreach(@new_assertions) do |line|
-            if pattern =~ line
-              fields = line.split
-              out.puts(strip_angles(fields[0]) + " " + get_localname(fields[2]))
-              count += 1
+          @source_files.each do |path|
+            File.foreach(path) do |line|
+              if pattern =~ line
+                fields = line.split
+                out.puts(strip_angles(fields[0]) + " " + get_localname(fields[2]))
+                count += 1
+              end
             end
           end
         end
@@ -85,11 +88,13 @@ module Ld4lBrowserData
         pattern = /22-rdf-syntax-ns#value/
         count = 0
         File.open(@identifier_to_value, 'w') do |out|
-          File.foreach(@bf_instance) do |line|
-            if pattern =~ line
-              fields = line.split
-              out.puts(strip_angles(fields[0]) + " " + strip_quotes(fields[2]))
-              count += 1
+          @source_files.each do |path|
+            File.foreach(path) do |line|
+              if pattern =~ line
+                fields = line.split
+                out.puts(strip_angles(fields[0]) + " " + strip_quotes(fields[2]))
+                count += 1
+              end
             end
           end
         end
@@ -97,8 +102,8 @@ module Ld4lBrowserData
       end
 
       def create_additional_worldcat_ids
-        filter(@bf_instance, /identifiedBy/, @instance_to_identifiers)
-        filter(@bf_instance, /OclcIdentifier/, @oclc_identifiers)
+        filter(/identifiedBy/, @instance_to_identifiers)
+        filter(/OclcIdentifier/, @oclc_identifiers)
 
         join(@instance_to_identifiers, 3, @oclc_identifiers, 1, @instance_to_oclc, [[1, 1], [1,3]])
         join(@instance_to_oclc, 2, @identifier_to_value, 1, @the_hard_way, [[1, 1], [2, 2]])
@@ -109,6 +114,10 @@ module Ld4lBrowserData
       def create_work_to_work_ids()
         join(@work_to_instance, 2, @all_instance_to_worldcat, 1, @work_instance_worldcat, [[1, 1], [1, 2], [2, 2]])
         join(@work_instance_worldcat, 3, @concordance, 1, @work_to_work_id, [[1, 1], [2, 2]])
+      end
+
+      def find_source_file_paths(pattern)
+        Dir.entries(@source_dir).select{|fn| fn =~ pattern}.map{|fn| in_source_dir(fn)}
       end
 
       def in_source_dir(filename)
@@ -137,18 +146,22 @@ module Ld4lBrowserData
         $~[0]
       end
 
-      def filter(in_path, pattern, out_path)
-        @report.start_filter(in_path, out_path)
-        count = 0
+      def filter(pattern, out_path)
         File.open(out_path, 'w') do |out|
-          File.foreach(in_path) do |line|
-            if pattern =~ line
-              out.puts(line.split.map {|v| strip_quotes(strip_angles(v))}.join(' '))
-              count += 1
-            end
+          @source_files.each{ |path| filter_one_file(path, pattern, out) }
+        end
+      end
+
+      def filter_one_file(in_path, pattern, out)
+        @report.start_filter(in_path, out.path)
+        count = 0
+        File.foreach(in_path) do |line|
+          if pattern =~ line
+            out.puts(line.split.map {|v| strip_quotes(strip_angles(v))}.join(' '))
+            count += 1
           end
         end
-        @report.end_filter(in_path, out_path, count)
+        @report.end_filter(in_path, out.path, count)
       end
 
       def join(in_path_1, field_1, in_path_2, field_2, out_path, out_fields)
