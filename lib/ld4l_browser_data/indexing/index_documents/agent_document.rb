@@ -72,7 +72,7 @@ module Ld4lBrowserData
             title = row['title']
             unless title
               title = 'NO TITLE'
-              @stats.warning 'NO TITLE for created/contributed'
+              @stats.warning('NO TITLE for created/contributed', @uri) 
             end
 
             if row['work']

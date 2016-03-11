@@ -1,3 +1,5 @@
+require 'ld4l_browser_data/utilities/warnings_counter'
+
 module Ld4lBrowserData
   module Indexing
     module IndexDocuments
@@ -8,7 +10,7 @@ module Ld4lBrowserData
           @docs_count = 0
           @predicate_counts = CountsMap.new
           @value_counts = CountsMap.new
-          @warning_counts = CountsMap.new
+          @warning_counts = Utilities::WarningsCounter.new
         end
 
         def record(doc)
@@ -39,8 +41,8 @@ module Ld4lBrowserData
           end
         end
 
-        def warning(str)
-          @warning_counts.add_occurences(str, 1)
+        def warning(message, uri='NO URI')
+          @warning_counts.record_warning(message, uri)
         end
 
         def to_s()
@@ -62,10 +64,19 @@ module Ld4lBrowserData
         end
 
         def format_warnings
-          header = "   count   message"
-          @warning_counts.to_a.sort {|a, b| a[0] <=> b[0]}.inject([header]) do |lines, item|
-            lines << "%8d   %s" % [item[1].occurences, item[0]]
-          end.join("\n")
+          if @warning_counts.empty?
+            "   No warnings"
+          else
+            header = "   count   message"
+            @warning_counts.items.inject([header]) do |lines, item|
+              lines << "%8d   %s" % [item.count, item.message]
+              item.examples.each do |example|
+                lines << "              #{example}"
+              end
+              lines << "              ..." if item.count > item.examples.size
+              lines
+            end.join("\n")
+          end
         end
 
         class Counter

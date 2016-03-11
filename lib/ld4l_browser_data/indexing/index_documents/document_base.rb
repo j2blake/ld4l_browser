@@ -67,9 +67,9 @@ module Ld4lBrowserData
           if titles.empty?
             titles << 'NO TITLE'
             if uri == @uri
-              @stats.warning 'NO TITLE'
+              @stats.warning('NO TITLE', uri)
             else
-              @stats.warning 'NO TITLE for uri'
+              @stats.warning('NO TITLE for uri', uri)
             end
           end
           titles

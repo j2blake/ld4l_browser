@@ -177,7 +177,7 @@ module Ld4lBrowserData
             name = row['name']
             unless name
               name = 'NO NAME'
-              @stats.warning 'NO NAME for creator/contributor'
+              @stats.warning('NO NAME for creator/contributor', @uri)
             end
             if row['agent']
               agent_uri = row['agent']
