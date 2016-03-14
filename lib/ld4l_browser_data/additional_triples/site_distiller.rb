@@ -34,6 +34,7 @@ module Ld4lBrowserData
 
         @source_files = find_source_file_paths(/\.nt$/)
         @work_to_instance = in_target_dir('work_to_instance.txt')
+        @instances = in_target_dir('instances.txt')
         @instance_to_worldcat = in_target_dir('instance_to_worldcat.txt')
         @instance_to_identifiers = in_target_dir('instance_to_identifier.txt')
         @object_to_identifiers = in_target_dir('object_to_identifier.txt')
@@ -103,10 +104,11 @@ module Ld4lBrowserData
       end
 
       def create_additional_worldcat_ids
+        filter(/http:\/\/bib\.ld4l\.org\/ontology\/Instance/, @instances)
         filter(/identifiedBy/, @object_to_identifiers)
         filter(/OclcIdentifier/, @oclc_identifiers)
 
-        join(@object_to_identifiers, 1, @work_to_instance, 2, @instance_to_identifiers, [[1, 1], [1, 2], [1, 3]])
+        join(@object_to_identifiers, 1, @instances, 1, @instance_to_identifiers, [[1, 1], [1, 2], [1, 3]])
         join(@instance_to_identifiers, 3, @oclc_identifiers, 1, @instance_to_oclc, [[1, 1], [1, 3]])
         join(@instance_to_oclc, 2, @identifier_to_value, 1, @the_hard_way, [[1, 1], [2, 2]])
 
