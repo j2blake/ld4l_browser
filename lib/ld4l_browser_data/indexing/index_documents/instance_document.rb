@@ -211,7 +211,15 @@ module Ld4lBrowserData
               end
             end
           end
-          @stats.warning('No stackview_scores', @uri) if @stackview_scores.empty?
+          case @stackview_scores.size
+          when 0
+            @stats.warning('No stackview scores', @uri)
+          when 1
+            # OK
+          else
+            @stats.warning('Multiple stackview scores', @uri)
+            @stackview_scores = @stackview_scores[0..0]
+          end
         end
 
         def assemble_document()
