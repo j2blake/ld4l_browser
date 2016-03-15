@@ -26,6 +26,7 @@ module Ld4lBrowserData
           'Usage is ld4l_index_specific_uris \\',
           'source=<source_file_or_directory> \\',
           'report=<report_file>[~REPLACE] \\',
+          '[capture_state=<state_file>[~REPLACE]] \\',
           '[IGNORE_BOOKMARK] \\',
           '[CLEAR_INDEX] \\',
           '[IGNORE_SITE_SURPRISES] \\',
@@ -33,9 +34,10 @@ module Ld4lBrowserData
       end
 
       def process_arguments()
-        parse_arguments(:source, :report, :IGNORE_BOOKMARK, :CLEAR_INDEX, :IGNORE_SITE_SURPRISES)
+        parse_arguments(:source, :report, :capture_state, :IGNORE_BOOKMARK, :CLEAR_INDEX, :IGNORE_SITE_SURPRISES)
         @source_files = SourceFiles.new(validate_input_source(:source, "source_file_or_directory"))
         @report = Report.new(validate_output_file(:report, "report file"))
+        @state_file = validate_output_file(:capture_state, "state file") if @args[:capture_state]
         @ignore_bookmark = @args[:IGNORE_BOOKMARK]
         @ignore_surprises = @args[:IGNORE_SITE_SURPRISES]
         @clear_index = @args[:CLEAR_INDEX]
@@ -76,6 +78,17 @@ module Ld4lBrowserData
         end
       end
 
+      def capture_state
+        state = {
+          agents: @doc_factory.agent_stats,
+          instances: @doc_factory.instance_stats,
+          works: @doc_factory.work_stats,
+        }
+        File.open(@state_file, 'w') do |f|
+          f.puts JSON.pretty_generate(state)
+        end
+      end
+
       def initialize_bookmark
         @bookmark = Bookmark.new(@source_files.basename, @ss, @ignore_bookmark)
       end
@@ -104,8 +117,9 @@ module Ld4lBrowserData
 
           do_it
 
-          @report.summarize(@doc_factory, @bookmark)
           @ss.commit
+          @report.summarize(@doc_factory, @bookmark)
+          capture_state if @state_file
           @bookmark.complete
         rescue UserInputError
           puts

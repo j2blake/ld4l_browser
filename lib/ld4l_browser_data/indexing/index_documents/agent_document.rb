@@ -58,6 +58,7 @@ module Ld4lBrowserData
 
         def get_names()
           @names = @properties.select {|prop| prop['p'] == PROP_NAME }.map {|prop| prop['o']}
+          @stats.warning('No names', @uri) if @names.empty?
         end
 
         def get_birthdate()
@@ -72,7 +73,7 @@ module Ld4lBrowserData
             title = row['title']
             unless title
               title = 'NO TITLE'
-              @stats.warning('NO TITLE for created/contributed', @uri) 
+              @stats.warning('NO TITLE for created/contributed', @uri)
             end
 
             if row['work']
@@ -83,6 +84,8 @@ module Ld4lBrowserData
               end
             end
           end
+          @stats.warning('No created', @uri) if @created.empty?
+          @stats.warning('No contributed', @uri) if @contributed.empty?
         end
 
         def assemble_document()

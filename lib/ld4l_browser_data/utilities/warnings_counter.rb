@@ -25,6 +25,13 @@ module Ld4lBrowserData
           @count += 1
           @examples << uri if @examples.size < EXAMPLES_LIMIT
         end
+
+        def to_json(*a)
+          {
+            count: @count,
+            examples: @examples,
+          }.to_json(*a)
+        end
       end
 
       def initialize
@@ -46,6 +53,10 @@ module Ld4lBrowserData
 
       def empty?
         @items.size == 0
+      end
+
+      def to_json(*a)
+        @items.to_json(*a)
       end
     end
   end

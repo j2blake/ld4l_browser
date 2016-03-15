@@ -42,6 +42,7 @@ module Ld4lBrowserData
 
         def get_properties()
           @properties = QueryRunner.new(QUERY_PROPERTIES).bind_uri('s', @uri).select(@ts)
+          @stats.warning('NO PROPERTIES', @uri) if @properties.empty?
         end
 
         def get_classes
@@ -52,6 +53,7 @@ module Ld4lBrowserData
               @classes << localname if localname
             end
           end
+          @stats.warning('NO CLASSES', @uri) if @classes.empty?
         end
 
         def get_titles()

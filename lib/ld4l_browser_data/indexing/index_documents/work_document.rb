@@ -141,6 +141,7 @@ module Ld4lBrowserData
               @topics << topic
             end
           end
+          @stats.warning('No topics', @uri) if @topics.empty?
         end
 
         def get_instances()
@@ -158,6 +159,7 @@ module Ld4lBrowserData
               @instances << instance
             end
           end
+          @stats.warning('No instances', @uri) if @instances.empty?
         end
 
         def get_extent_for_instance(instance_uri)
@@ -177,7 +179,7 @@ module Ld4lBrowserData
             name = row['name']
             unless name
               name = 'NO NAME'
-              @stats.warning('NO NAME for creator/contributor', @uri)
+              @stats.warning('No name for creator/contributor', @uri)
             end
             if row['agent']
               agent_uri = row['agent']
@@ -188,6 +190,8 @@ module Ld4lBrowserData
               end
             end
           end
+          @stats.warning('No creators', @uri) if @creators.empty?
+          @stats.warning('No contributors', @uri) if @contributors.empty?
         end
 
         def get_languages()
@@ -198,6 +202,7 @@ module Ld4lBrowserData
               @languages << (row['label'] || LanguageReference.lookup(row['lang']) || DocumentFactory.uri_localname(row['lang']))
             end
           end
+          @stats.warning('No languages', @uri) if @languages.empty?
         end
 
         def get_related_works()
@@ -212,6 +217,7 @@ module Ld4lBrowserData
             related['id'] = DocumentFactory::uri_to_id(uri) if uri.start_with?(LOCAL_URI_PREFIX)
             @related << related
           end
+          @stats.warning('No related works', @uri) if @related.empty?
         end
 
         def get_work_ids()
@@ -222,6 +228,7 @@ module Ld4lBrowserData
               @work_ids << { uri: uri, localname: DocumentFactory::uri_localname(uri) }
             end
           end
+          @stats.warning('No work ids', @uri) if @work_ids.empty?
         end
 
         def get_work_links()
@@ -261,7 +268,6 @@ module Ld4lBrowserData
           doc['text'] = @titles + (@topics + @creators + @contributors).map {|t| t[:label]}
           @document = doc
         end
-
       end
     end
   end

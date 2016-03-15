@@ -50,7 +50,8 @@ module Ld4lBrowserData
       def task_for_chunk(fn)
         source_file = File.join(@source_dir, fn)
         report_file = File.join(@reports_dir, fn)
-        cmd = %W(ld4l_index_specific_uris source=#{source_file} report=#{report_file}~REPLACE)
+        state_file = File.join(@reports_dir, fn + '.js')
+        cmd = %W(ld4l_index_specific_uris source=#{source_file} report=#{report_file}~REPLACE capture_state=#{state_file}~REPLACE)
         cmd << "IGNORE_BOOKMARK" if @ignore_bookmarks
         t = {
           name: fn,

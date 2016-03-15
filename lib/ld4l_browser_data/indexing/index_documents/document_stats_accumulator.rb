@@ -79,6 +79,14 @@ module Ld4lBrowserData
           end
         end
 
+        def to_json(*a)
+          {
+            predicates: @predicate_counts,
+            values: @value_counts,
+            warnings: @warning_counts,
+          }.to_json(*a)
+        end
+
         class Counter
           attr_reader :docs_count
           attr_reader :occurences
@@ -90,6 +98,13 @@ module Ld4lBrowserData
           def add_occurences(count)
             @docs_count += 1
             @occurences += count
+          end
+
+          def to_json(*a)
+            {
+              docs_count: @docs_count,
+              occurences: @occurences,
+            }.to_json(*a)
           end
         end
 

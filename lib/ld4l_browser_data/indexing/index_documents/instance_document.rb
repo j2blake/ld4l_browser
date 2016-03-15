@@ -125,6 +125,7 @@ module Ld4lBrowserData
               @instance_of << { uri: uri, label: get_titles_for(uri).shift, id: DocumentFactory::uri_to_id(uri) }
             end
           end
+          @stats.warning('No isInstanceOf', @uri) if @instance_of.empty?
         end
 
         def get_worldcat_ids_instance_links_and_same_as()
@@ -143,6 +144,7 @@ module Ld4lBrowserData
               end
             end
           end
+          @stats.warning('No worldcat IDs', @uri) if @worldcat_ids.empty?
         end
 
         def get_identifiers()
@@ -160,6 +162,7 @@ module Ld4lBrowserData
               @identifiers << { localname: DocumentFactory::uri_localname(types.shift || TYPE_IDENTIFIER), label: value} if value
             end
           end
+          @stats.warning('No identifiers', @uri) if @identifiers.empty?
         end
 
         def get_publisher_provisions()
@@ -176,11 +179,13 @@ module Ld4lBrowserData
               end
             end
           end
+          @stats.warning('No publishers', @uri) if @publishers.empty?
         end
 
         def get_holdings()
           results = QueryRunner.new(QUERY_SHELF_MARK).bind_uri('instance', @uri).select(@ts)
           @holdings = results.each.map {|row| row['value'] }.select{|v| v}
+          @stats.warning('No holdings', @uri) if @holdings.empty?
         end
 
         def get_data_properties()
@@ -206,6 +211,7 @@ module Ld4lBrowserData
               end
             end
           end
+          @stats.warning('No stackview_scores', @uri) if @stackview_scores.empty?
         end
 
         def assemble_document()
