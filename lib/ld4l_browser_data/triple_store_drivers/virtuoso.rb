@@ -23,6 +23,7 @@ module Ld4lBrowserData
         :username => 'dba',
         :password => 'dba',
         :max_connections => 30,
+        :checkpoint_interval => 10,
         :ingest_source_dir => '', # if used must be comma-separated list, beginning with a comma.
       }
 
