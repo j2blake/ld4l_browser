@@ -104,6 +104,7 @@ module Ld4lBrowserData
         @ss.commit
         @bookmark.persist
         @report.summarize(@doc_factory, @bookmark, :interrupted)
+        capture_state if @state_file
       end
 
       def run()
