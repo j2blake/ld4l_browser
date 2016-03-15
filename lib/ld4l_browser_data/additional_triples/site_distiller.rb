@@ -151,13 +151,15 @@ module Ld4lBrowserData
       end
 
       def filter(pattern, out_path)
+        how_many = @source_files.size
         File.open(out_path, 'w') do |out|
-          @source_files.each{ |path| filter_one_file(path, pattern, out) }
+          @report.start_filter(pattern, out.path, how_many)
+          count = @source_files.map{ |path| filter_one_file(path, pattern, out) }.inject(:+)
+          @report.end_filter(pattern, out.path, how_many, count)
         end
       end
 
       def filter_one_file(in_path, pattern, out)
-        @report.start_filter(in_path, out.path)
         count = 0
         File.foreach(in_path) do |line|
           if pattern =~ line
@@ -165,7 +167,7 @@ module Ld4lBrowserData
             count += 1
           end
         end
-        @report.end_filter(in_path, out.path, count)
+        count
       end
 
       def join(in_path_1, field_1, in_path_2, field_2, out_path, out_fields)

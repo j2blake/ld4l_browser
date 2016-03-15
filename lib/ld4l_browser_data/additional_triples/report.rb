@@ -10,16 +10,20 @@ module Ld4lBrowserData
         logit("Finished #{name}, count=#{count}")
       end
 
-      def start_filter(in_path, out_path)
-        in_basename = File.basename(in_path)
+#      @report.start_filter(pattern, out.path, how_many)
+#      File.open(out_path, 'w') do |out|
+#        count += @source_files.each{ |path| filter_one_file(path, pattern, out) }
+#      end
+#      @report.end_filter(pattern, out.path, how_many, count)
+
+      def start_filter(pattern, out_path, how_many_files)
         out_basename = File.basename(out_path)
-        logit("Filtering %s to %s" % [in_basename, out_basename])
+        logit("Filtering %d files to %s by %s" % [how_many_files, out_basename, pattern.inspect])
       end
 
-      def end_filter(in_path, out_path, count)
-        in_basename = File.basename(in_path)
+      def end_filter(pattern, out_path, how_many_files, count)
         out_basename = File.basename(out_path)
-        logit("Filtered %s to %s, count = %d" % [in_basename, out_basename, count])
+        logit("Filtered  %d files to %s by %s, count=%d" % [how_many_files, out_basename, pattern.inspect, count])
       end
 
       def start_join(in_path_1, in_path_2, out_path)
