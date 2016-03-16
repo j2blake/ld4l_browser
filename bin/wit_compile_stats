@@ -1,0 +1,24 @@
+#! /usr/bin/env ruby
+
+=begin rdoc
+--------------------------------------------------------------------------------
+
+One of the WIT processes has generated a whole slew of JSON stats files. Merge
+them together and display the result.
+
+Can we do this in a generalized way?
+
+--------------------------------------------------------------------------------
+=end
+
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'ld4l_browser_data'
+require 'ld4l_browser_data/whatever_it_takes'
+
+#
+# ---------------------------------------------------------
+# MAIN ROUTINE
+# ---------------------------------------------------------
+#
+
+Ld4lBrowserData::WhateverItTakes::CompileStats.new.run
