@@ -81,6 +81,7 @@ module Ld4lBrowserData
 
         def to_json(*a)
           {
+            count: @docs_count,
             predicates: @predicate_counts,
             values: @value_counts,
             warnings: @warning_counts,

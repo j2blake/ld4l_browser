@@ -72,6 +72,10 @@ module Ld4lBrowserData
           @settings = DEFAULT_PARAMS.merge(params)
           @summary = {}
         end
+        
+        def empty?
+          @summary.empty?
+        end
 
         def <<(stats)
           incoming = stats.to_hash

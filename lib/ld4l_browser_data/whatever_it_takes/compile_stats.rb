@@ -2,214 +2,90 @@
 --------------------------------------------------------------------------------
 
 One of the WIT processes has generated a whole slew of JSON stats files. Merge
-them together and display the result.
+them together and display the result in a chosen format.
 
-Can we do this in a generalized way?
+--------------------------------------------------------------------------------
+
+>>>>>>>> TO DO:
+
+    indexing
+      show the whole thing.
+      for doc_counts and occurences, try: found on 99 Agents, up to 123 per Agent. <<<< CHANGE TO STATS to get max
 
 --------------------------------------------------------------------------------
 =end
 require 'json'
 
+require_relative 'compile_stats/formats'
 require_relative 'compile_stats/json_stats_accumulator'
+require_relative 'compile_stats/report'
 
 module Ld4lBrowserData
   module WhateverItTakes
     class CompileStats
+      include Utilities::MainClassHelper
 
-      FIRST_STATS = <<-END
-     {
-        "agents": {
-          "predicates": {
-            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
-              "docs_count": 73,
-              "occurences": 73
-            },
-            "http://bib.ld4l.org/ontology/identifiedBy": {
-              "docs_count": 4,
-              "occurences": 5
-            }
-          },
-          "values": {
-            "classes": {
-              "docs_count": 73,
-              "occurences": 73
-            },
-            "created": {
-              "docs_count": 3,
-              "occurences": 3
-            }
-          },
-          "warnings": {
-            "No contributed": {
-              "count": 11,
-              "examples": [
-                "http://draft.ld4l.org/cornell/10017person13",
-                "http://draft.ld4l.org/cornell/10021person15",
-                "http://draft.ld4l.org/cornell/10023organization15",
-                "http://draft.ld4l.org/cornell/10029person20",
-                "http://draft.ld4l.org/cornell/10034organization29",
-                "http://draft.ld4l.org/cornell/10038person28",
-                "http://draft.ld4l.org/cornell/10047person37",
-                "http://draft.ld4l.org/cornell/10052organization44",
-                "http://draft.ld4l.org/cornell/10053organization44",
-                "http://draft.ld4l.org/cornell/10055person45"
-              ]
-            }
-          }
-        },
-        "instances": {
-          "predicates": {
-            "http://bib.ld4l.org/ontology/illustrationNote": {
-              "docs_count": 35,
-              "occurences": 35
-            },
-            "http://bib.ld4l.org/ontology/legacy/supplementaryContentNote": {
-              "docs_count": 25,
-              "occurences": 26
-            }
-          },
-          "values": {
-            "supplementary_content_notes": {
-              "docs_count": 25,
-              "occurences": 26
-            }
-          },
-          "warnings": {
-            "No identifiers": {
-              "count": 1,
-              "examples": [
-                "http://draft.ld4l.org/cornell/10059instance65"
-              ]
-            }
-          }
-        },
-        "works": {
-          "predicates": {
-            "http://purl.org/dc/terms/relation": {
-              "docs_count": 5,
-              "occurences": 5
-            }
-          },
-          "values": {
-            "related": {
-              "docs_count": 10,
-              "occurences": 10
-            }
-          },
-          "warnings": {
-            "No languages": {
-              "count": 28,
-              "examples": [
-                "http://draft.ld4l.org/cornell/10017work16",
-                "http://draft.ld4l.org/cornell/10017work9"
-              ]
-            }
-          }
-        }
-      } 
-     END
-      
-      SECOND_STATS = <<-END
-     {
-        "agents": {
-          "predicates": {
-            "http://bib.ld4l.org/ontology/identifiedBy": {
-              "docs_count": 4,
-              "occurences": 5
-            }
-          },
-          "values": {
-            "classes": {
-              "docs_count": 73,
-              "occurences": 73
-            },
-            "created": {
-              "docs_count": 1,
-              "occurences": 1
-            }
-          },
-          "warnings": {
-            "No contributed": {
-              "count": 11,
-              "examples": [
-                "http://draft.ld4l.org/cornell/10017person13",
-                "http://draft.ld4l.org/cornell/10021person15",
-                "http://draft.ld4l.org/cornell/10023organization15",
-                "http://draft.ld4l.org/cornell/10029person20",
-                "http://draft.ld4l.org/cornell/10034organization29",
-                "http://draft.ld4l.org/cornell/10038person28",
-                "http://draft.ld4l.org/cornell/10047person37",
-                "http://draft.ld4l.org/cornell/10052organization44",
-                "http://draft.ld4l.org/cornell/10053organization44",
-                "http://draft.ld4l.org/cornell/10055person45"
-              ]
-            }
-          }
-        },
-        "instances": {
-          "widgets": {
-            "therbligs": [1, 2]
-          },
-          "predicates": {
-            "http://bib.ld4l.org/ontology/illustrationNote": {
-              "docs_count": 35,
-              "occurences": 35
-            },
-            "http://bib.ld4l.org/ontology/legacy/supplementaryContentNote": {
-              "docs_count": 25,
-              "occurences": 26
-            }
-          },
-          "values": {
-            "silly_values": {
-              "count": 25,
-              "one": 26,
-              "two": 26
-            }
-          },
-          "warnings": {
-            "No identifiers": {
-              "count": 1,
-              "examples": [
-                "http://draft.ld4l.org/cornell/10059instance65"
-              ]
-            }
-          }
-        },
-        "works": {
-          "predicates": {
-            "http://purl.org/dc/terms/relation": {
-              "docs_count": 5,
-              "occurences": 5
-            }
-          },
-          "values": {
-            "related": {
-              "docs_count": 10,
-              "occurences": 10
-            }
-          },
-          "warnings": {
-            "No languages": {
-              "count": 28,
-              "examples": [
-                "http://draft.ld4l.org/cornell/10017work16",
-                "http://draft.ld4l.org/cornell/10017work9"
-              ]
-            }
-          }
-        }
-      } 
-     END
-      
+      FORMATS = Formats.keys
+
+      def initialize
+        @usage_text = [
+          'Usage is wit_compile_stats \\',
+          'source=<source_directory> \\',
+          'report=<report_file>[~REPLACE] \\',
+          "[output_format=<#{FORMATS.join('|')}>] \\",
+        ]
+      end
+
+      def process_arguments()
+        parse_arguments(:source, :report, :output_format)
+        @source = validate_input_directory(:source, "source directory")
+        @report = Report.new('wit_compile_stats', validate_output_file(:report, "report file"))
+        @output_format = validate_output_format
+        @report.log_header
+      end
+
+      def validate_output_format
+        f = @args[:output_format]
+        if f
+          format = f.to_sym
+        else
+          format = FORMATS[0]
+        end
+        user_input_error("Valid formats are #{FORMATS.join(', ')}") unless FORMATS.include?(format)
+        format
+      end
+
+      def gather_stats
+        @accumulator = JsonStatsAccumulator.new(max_array_size: 5)
+        Dir.chdir(@source) do
+          Dir.entries('.').each do |fn|
+            if fn.end_with?('.js')
+              File.open(fn) do |f|
+                @accumulator << JSON.load(f)
+              end
+            end
+          end
+        end
+        raise IllegalStateError.new("No stats files in #{@source}.") if @accumulator.empty?
+      end
+
+      def report
+        @report.write_formatted_summary(@output_format, @accumulator.summary)
+      end
+
       def run
-        first_stats = JSON.load(FIRST_STATS)
-        second_stats = JSON.load(SECOND_STATS)
-        accumulator = JsonStatsAccumulator.new(max_array_size: 6)
-        accumulator << first_stats
-        accumulator << second_stats
-        summary = accumulator.summary
-        puts JSON::pretty_generate(summary)
+        begin
+          process_arguments
+          gather_stats
+          report
+        rescue UserInputError, IllegalStateError
+          puts
+          puts "ERROR: #{$!}"
+          puts
+          exit 1
+        ensure
+          @report.close if @report
+        end
       end
     end
   end
