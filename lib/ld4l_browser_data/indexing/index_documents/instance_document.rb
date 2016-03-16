@@ -126,6 +126,7 @@ module Ld4lBrowserData
             end
           end
           @stats.warning('No isInstanceOf', @uri) if @instance_of.empty?
+          @stats.warning('Multiple isInstanceOf', @uri) if @instance_of.size > 1
         end
 
         def get_worldcat_ids_instance_links_and_same_as()
