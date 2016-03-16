@@ -219,7 +219,7 @@ module Ld4lBrowserData
             # OK
           else
             @stats.warning('Multiple stackview scores', @uri)
-            @stackview_scores = @stackview_scores[0..0]
+            @stackview_scores = [@stackview_scores.max]
           end
         end
 
