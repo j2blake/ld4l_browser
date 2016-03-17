@@ -11,7 +11,7 @@ module Ld4lBrowserData
           PREFIX ld4l: <http://bib.ld4l.org/ontology/>
           PREFIX prov: <http://www.w3.org/ns/prov#>
           PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-          SELECT ?work ?title ?isAuthor 
+          SELECT ?work ?title ?isCreator 
           WHERE { 
             ?work ld4l:hasContribution ?c .
             ?c prov:agent ?agent .
@@ -20,8 +20,8 @@ module Ld4lBrowserData
               ?t rdfs:label ?title .
             }
             OPTIONAL { 
-              ?c a ld4l:AuthorContribution . 
-              BIND(?c as ?isAuthor) 
+              ?c a ld4l:CreatorContribution . 
+              BIND(?c as ?isCreator) 
             }
           } LIMIT 1000
         END
@@ -77,7 +77,7 @@ module Ld4lBrowserData
             end
 
             if row['work']
-              if row['isAuthor']
+              if row['isCreator']
                 @created << {uri: row['work'], label: title, id: DocumentFactory::uri_to_id(row['work'])}
               else
                 @contributed << {uri: row['work'], label: title, id: DocumentFactory::uri_to_id(row['work'])}

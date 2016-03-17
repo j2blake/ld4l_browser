@@ -39,7 +39,7 @@ module Ld4lBrowserData
       PREFIX ld4l: <http://bib.ld4l.org/ontology/>
       PREFIX foaf: <http://xmlns.com/foaf/0.1/>
       PREFIX prov: <http://www.w3.org/ns/prov#>
-      SELECT ?agent ?name ?isAuthor 
+      SELECT ?agent ?name ?isCreator 
       WHERE { 
         ?w ld4l:hasContribution ?c .
         ?c prov:agent ?agent .
@@ -47,8 +47,8 @@ module Ld4lBrowserData
           ?agent foaf:name ?name .
         }
         OPTIONAL { 
-          ?c a ld4l:AuthorContribution . 
-          BIND(?c as ?isAuthor) 
+          ?c a ld4l:CreatorContribution . 
+          BIND(?c as ?isCreator) 
         }
       } LIMIT 1000
         END
@@ -183,7 +183,7 @@ module Ld4lBrowserData
             end
             if row['agent']
               agent_uri = row['agent']
-              if row['isAuthor']
+              if row['isCreator']
                 @creators << {uri: agent_uri, label: name, id: DocumentFactory::uri_to_id(agent_uri)}
               else
                 @contributors << {uri: agent_uri, label: name, id: DocumentFactory::uri_to_id(agent_uri)}
