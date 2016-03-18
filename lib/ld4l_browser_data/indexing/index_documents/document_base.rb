@@ -71,7 +71,7 @@ module Ld4lBrowserData
             if uri == @uri
               @stats.warning('NO TITLE', uri)
             else
-              @stats.warning('NO TITLE for uri', uri)
+              @stats.warning('NO TITLE for related uri', uri)
             end
           end
           titles
