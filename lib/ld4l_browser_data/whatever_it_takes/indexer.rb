@@ -26,6 +26,7 @@ module Ld4lBrowserData
           '[IGNORE_BOOKMARKS] \\',
           '[IGNORE_SITE_SURPRISES] \\',
           '[SHOW_ALL_OUTPUT] \\',
+          '[CONTINUE_ON_FAILED_CHUNK] \\',
         ]
 
         @valid_args = [
@@ -37,7 +38,8 @@ module Ld4lBrowserData
           :RESTART,
           :IGNORE_BOOKMARKS,
           :IGNORE_SITE_SURPRISES,
-          :SHOW_ALL_OUTPUT
+          :SHOW_ALL_OUTPUT,
+          :CONTINUE_ON_FAILED_CHUNK,
         ]
 
         super

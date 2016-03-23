@@ -2,12 +2,22 @@ module Ld4lBrowserData
   module WhateverItTakes
     class Report
       include Utilities::ReportHelper
+      def initialize(main_routine, path)
+        super
+        @num_completed = 0
+        @num_failed = 0
+      end
+
       def interrupted
         logit "INTERRUPTED."
       end
 
-      def restored_files(how_many)
-        logit "Restored #{how_many} files."
+      def restored_completed_files(how_many)
+        logit "Restored #{how_many} completed files."
+      end
+
+      def restored_failed_files(how_many)
+        logit "Restored #{how_many} failed files."
       end
 
       def submitting_task(t)
@@ -16,14 +26,16 @@ module Ld4lBrowserData
 
       def chunk_completed(name, running_time)
         logit("#{name} completed successfully -- running time: #{running_time}.")
+        @num_completed += 1
       end
 
       def chunk_failed(name, running_time, exit_code)
         logit("#{name} failed -- exit code: #{exit_code}, running time: #{running_time}")
+        @num_failed += 1
       end
 
       def log_process_results(results)
-        message = [" -- Process results -- "]
+        message = [" -- Process results -- ", "#{@num_completed} completed, #{@num_failed} failed"]
         message <<   'Name           pid exit_code run_time command'
         results.each do |r|
           cmd_string = r[:cmd].join(' ')

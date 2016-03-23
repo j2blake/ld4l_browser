@@ -1,4 +1,5 @@
 require 'fileutils'
+
 require_relative 'report'
 
 module Ld4lBrowserData
@@ -21,6 +22,7 @@ module Ld4lBrowserData
         @ignore_bookmarks = @args[:IGNORE_BOOKMARKS]
         @ignore_surprises = @args[:IGNORE_SITE_SURPRISES]
         @show_all_output = @args[:SHOW_ALL_OUTPUT]
+        @continue_on_failed_chunk = @args[:CONTINUE_ON_FAILED_CHUNK]
 
         @reports_dir = validate_output_directory(:report_dir, "reports directory")
         prepare_reports_directory
@@ -74,6 +76,8 @@ module Ld4lBrowserData
       def restart_if_requested
         @completed_dir = File.join(@source_dir, '_completed')
         Dir.mkdir(@completed_dir) unless File.exist?(@completed_dir)
+        @failed_dir = File.join(@source_dir, '_failed')
+        Dir.mkdir(@failed_dir) unless File.exist?(@failed_dir)
         return unless @restart
 
         Dir.chdir(@completed_dir) do |d|
@@ -81,7 +85,14 @@ module Ld4lBrowserData
           files.each do |fn|
             `mv #{fn} ..`
           end
-          @report.restored_files(files.size)
+          @report.restored_completed_files(files.size)
+        end
+        Dir.chdir(@failed_dir) do |d|
+          files = source_files('.')
+          files.each do |fn|
+            `mv #{fn} ..`
+          end
+          @report.restored_failed_files(files.size)
         end
       end
 
@@ -135,7 +146,8 @@ module Ld4lBrowserData
             @chunks_completed += 1
           else
             @report.chunk_failed(name, running_time, exit_code)
-            @failed = true
+            FileUtils.mv(File.join(@source_dir, name), @failed_dir)
+            @failed = true unless @continue_on_failed_chunk
           end
         end
       end
