@@ -1,0 +1,30 @@
+#! /usr/bin/env ruby
+
+=begin rdoc
+--------------------------------------------------------------------------------
+
+Added this to distill the additions to the revised data, instead of ingesting it all again.
+If we were starting from scratch, it would not be necessary.
+
+The pattern to look for is this:
+  :instance ld4l:identifiedBy :identifier .
+  :identifier a ld4l:LocalIlsIdentifier.
+  :identifier rdf:value "value".
+
+We already have a list of :instance to :identifier, and a list of identifier to value.
+
+--------------------------------------------------------------------------------
+=end
+
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'ld4l_browser_data'
+require 'ld4l_browser_data/additional_triples'
+require 'ld4l_browser_data/additional_triples/second_site_distiller'
+
+#
+# ---------------------------------------------------------
+# MAIN ROUTINE
+# ---------------------------------------------------------
+#
+
+Ld4lBrowserData::AdditionalTriples::SecondSiteDistiller.new.run
