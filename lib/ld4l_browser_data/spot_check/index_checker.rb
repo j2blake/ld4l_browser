@@ -1,0 +1,90 @@
+=begin rdoc
+--------------------------------------------------------------------------------
+
+Start with one or more directories, separated by commas. For each file of URIs
+in the directories, pull a URI at intervals, create an index page URL from it,
+and see whether that index page URL returns a page or an error.
+
+Options: what size interval, stop after max URIs tested, skip files.
+
+Log by file, wins/losses, and a sample of failing URIs.
+Log totals, how many files, how many with failures, how many without failures,
+            how many URIs, how many failures, how many successes.
+
+--------------------------------------------------------------------------------
+=end
+require "ld4l_browser_data/utilities/main_class_helper"
+
+require_relative "index_checker/report"
+require_relative "index_checker/uri_discoverer"
+require_relative "index_checker/uri_processor"
+
+module Ld4lBrowserData
+  module SpotCheck
+    class IndexChecker
+      include Utilities::MainClassHelper
+      def initialize
+        @usage_text = [
+          'Usage is spotcheck_index \\',
+          'source=<source_dir[,...]> \\',
+          'report=<report_file>[~REPLACE] \\',
+          '[uri_interval=<uri_sample_rate(5000)>] \\',
+          '[file_interval=<file_sample_rate(1)>] \\',
+          '[max_tests=<maximum_number_of_texts(1 million)>] \\',
+        ]
+      end
+
+      def process_arguments()
+        parse_arguments(:source, :report, :uri_interval, :file_interval, :max_tests)
+        @sources = validate_input_directories(:source, 'source directories')
+        @uri_interval = validate_integer(key: :uri_interval, label: 'uri_sample_rate', min: 1, default: '5000')
+        @file_interval = validate_integer(key: :file_interval, label: 'file_sample_rate', min: 1, default: '1')
+        @max_tests = validate_integer(key: :max_tests, label: 'maximum_number_of_texts', min: 1, default: '1000000')
+        @report = Report.new('spotcheck_index', validate_output_file(:report, "report file"))
+        @report.log_header
+      end
+
+      def trap_control_c
+        @interrupted = false
+        trap("SIGINT") do
+          @interrupted = true
+        end
+      end
+
+      def process_interruption
+        @report.summarize(:interrupted)
+      end
+
+      def do_tests
+        uri_infos = UriDiscoverer.new(@sources, @report, @uri_interval, @file_interval, @max_tests)
+        uri_infos.each do |info|
+          if @interrupted
+            process_interruption
+            raise UserInputError.new("INTERRUPTED")
+          else
+            UriProcessor.new(info, @report).test_it
+          end
+        end
+      end
+
+      def run()
+        begin
+          process_arguments
+          trap_control_c
+
+          do_tests
+
+          @report.summarize
+        rescue UserInputError, IllegalStateError
+          puts
+          puts "ERROR: #{$!}"
+          puts
+          exit 1
+        ensure
+          @report.close if @report
+        end
+      end
+    end
+  end
+end
+

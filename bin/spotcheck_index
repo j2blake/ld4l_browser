@@ -1,0 +1,29 @@
+#! /usr/bin/env ruby
+
+=begin rdoc
+--------------------------------------------------------------------------------
+
+Start with one or more directories, separated by commas. For each file of URIs
+in the directories, pull a URI at intervals, create an index page URL from it,
+and see whether that index page URL returns a page or an error.
+
+Options: what size interval, stop after max URIs tested, skip files.
+
+Log by file, wins/losses, and a sample of failing URIs.
+Log totals, how many files, how many with failures, how many without failures,
+            how many URIs, how many failures, how many successes.
+
+--------------------------------------------------------------------------------
+=end
+
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'ld4l_browser_data'
+require 'ld4l_browser_data/spot_check/index_checker'
+
+#
+# ---------------------------------------------------------
+# MAIN ROUTINE
+# ---------------------------------------------------------
+#
+
+Ld4lBrowserData::SpotCheck::IndexChecker.new.run
