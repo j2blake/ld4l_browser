@@ -30,17 +30,21 @@ module Ld4lBrowserData
           'report=<report_file>[~REPLACE] \\',
           '[uri_interval=<uri_sample_rate(5000)>] \\',
           '[file_interval=<file_sample_rate(1)>] \\',
-          '[max_tests=<maximum_number_of_texts(1 million)>] \\',
+          '[filename_matcher=<file_basename_pattern(^split_)>] \\',
+          '[max_tests=<maximum_number_of_texts(1000000)>] \\',
+          '[progress_interval=<progress_reporting_interval(1000)>] \\',
         ]
       end
 
       def process_arguments()
-        parse_arguments(:source, :report, :uri_interval, :file_interval, :max_tests)
+        parse_arguments(:source, :report, :uri_interval, :file_interval, :filename_matcher, :max_tests, :progress_interval)
         @sources = validate_input_directories(:source, 'source directories')
         @uri_interval = validate_integer(key: :uri_interval, label: 'uri_sample_rate', min: 1, default: '5000')
         @file_interval = validate_integer(key: :file_interval, label: 'file_sample_rate', min: 1, default: '1')
+        @filename_matcher = Regexp.compile(@args[:filename_matcher] || '^split_', nil)
         @max_tests = validate_integer(key: :max_tests, label: 'maximum_number_of_texts', min: 1, default: '1000000')
-        @report = Report.new('spotcheck_index', validate_output_file(:report, "report file"))
+        @progress_interval = validate_integer(key: :progress_interval, label: 'progress_reporting_interval', min: 1, default: '1000')
+        @report = Report.new('spotcheck_index', validate_output_file(:report, "report file"), @progress_interval)
         @report.log_header
       end
 
@@ -56,7 +60,7 @@ module Ld4lBrowserData
       end
 
       def do_tests
-        uri_infos = UriDiscoverer.new(@sources, @report, @uri_interval, @file_interval, @max_tests)
+        uri_infos = UriDiscoverer.new(@sources, @report, @uri_interval, @file_interval, @filename_matcher, @max_tests)
         uri_infos.each do |info|
           if @interrupted
             process_interruption

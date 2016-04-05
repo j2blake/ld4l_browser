@@ -4,21 +4,23 @@ Sample the files according to the input specs. Each return will be a hash of
 :uri, :file, :line
 
 =end
+require 'find'
 
 module Ld4lBrowserData
   module SpotCheck
     class IndexChecker
       class UriDiscoverer
-        def initialize(sources, report, uri_interval, file_interval, max_tests)
+        def initialize(sources, report, uri_interval, file_interval, filename_matcher, max_tests)
           @sources = sources
           @report = report
           @uri_interval = uri_interval
           @file_interval = file_interval
           @max_tests = max_tests
+          @filename_matcher = filename_matcher
         end
 
         def each
-          files = FilesEnumerator.new(@sources)
+          files = FilesEnumerator.new(@sources, @filename_matcher)
           all_lines = AllLinesEnumerator.new(files)
           selected_lines = SelectedLinesEnumerator.new(@uri_interval, all_lines)
           limited_selected_lines = LimitedLinesEnumerator.new(@max_tests, selected_lines)
@@ -29,14 +31,17 @@ module Ld4lBrowserData
       end
 
       class FilesEnumerator
-        def initialize(dirs)
+        def initialize(dirs, filename_matcher)
           @dirs = dirs
+          @filename_matcher = filename_matcher
         end
 
         def each
           @dirs.each do |d|
-            Dir.entries(d).reject{|fn| fn.start_with?('.')}.each do |fn|
-              yield File.join(d, fn)
+            Find.find(d) do |path|
+              if File.file?(path) && File.basename(path) =~ @filename_matcher
+                yield path 
+              end
             end
           end
         end

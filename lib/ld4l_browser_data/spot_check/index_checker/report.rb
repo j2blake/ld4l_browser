@@ -12,8 +12,9 @@ module Ld4lBrowserData
     class IndexChecker
       class Report
         include Utilities::ReportHelper
-        def initialize(main_routine, path)
-          super
+        def initialize(main_routine, path, progress_interval)
+          super(main_routine, path)
+          @progress_interval = progress_interval
           @map = Hash.new{|h, k| h[k] = FileStat.new(k)}
           @count_total = 0
         end
@@ -40,7 +41,7 @@ module Ld4lBrowserData
         end
 
         def running_total_ready?
-          0 == @count_total % 1000
+          0 == @count_total % @progress_interval
         end
 
         def write_file_failures
@@ -67,7 +68,7 @@ module Ld4lBrowserData
 
         def summarize(status=:normal)
           # The call to summarize is the final end-of-file
-          write_file_failures if file_has_failures?
+          write_file_failures if @current_file && file_has_failures?
 
           failing_files = @map.values.inject(0){|sum, stat| stat.failures == 0 ? sum : sum + 1}
           failing_tests = @map.values.inject(0){|sum, stat| sum + stat.failures}
