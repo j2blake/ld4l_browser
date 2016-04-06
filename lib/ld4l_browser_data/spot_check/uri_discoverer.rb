@@ -89,9 +89,8 @@ module Ld4lBrowserData
 
       def each
         @lines.each do |info|
-          if @so_far < @limit
-            yield info
-          end
+          return if @so_far >= @limit
+          yield info
           @so_far += 1
         end
       end
